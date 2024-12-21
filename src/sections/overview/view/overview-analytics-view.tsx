@@ -26,7 +26,7 @@ export function OverviewAnalyticsView() {
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="Weekly sales"
+            title="Weekly donation"
             percent={2.6}
             total={714000}
             icon={<img alt="icon" src="/assets/icons/glass/ic-glass-bag.svg" />}
@@ -39,7 +39,7 @@ export function OverviewAnalyticsView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="New users"
+            title="Weekly claims"
             percent={-0.1}
             total={1352831}
             color="secondary"
@@ -53,7 +53,7 @@ export function OverviewAnalyticsView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
-            title="Purchase orders"
+            title="Food matches"
             percent={2.8}
             total={1723315}
             color="warning"
@@ -81,13 +81,12 @@ export function OverviewAnalyticsView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AnalyticsCurrentVisits
-            title="Current visits"
+            title="Top donation by area(this year)"
             chart={{
               series: [
-                { label: 'America', value: 3500 },
-                { label: 'Asia', value: 2500 },
-                { label: 'Europe', value: 1500 },
-                { label: 'Africa', value: 500 },
+                { label: 'Bugis', value: 3500 },
+                { label: 'Jurong East', value: 2500 },
+                { label: 'Clementi', value: 500 },
               ],
             }}
           />
@@ -100,8 +99,8 @@ export function OverviewAnalyticsView() {
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
               series: [
-                { name: 'Team A', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
-                { name: 'Team B', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
+                { name: 'Donors', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
+                { name: 'Beneficiaries', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
               ],
             }}
           />
