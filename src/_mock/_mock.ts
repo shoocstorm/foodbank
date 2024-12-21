@@ -65,10 +65,10 @@ export const _price = (index: number) =>
 
 export const _company = (index: number) =>
   [
-    'Medhurst, Moore and Franey',
-    'Hahn, Homenick and Lind',
-    'Larkin LLC',
-    'Stamm, Larson and Mertz',
+    'Parkroyal Collection Marina Bay Hotel',
+    'Food Republic @ Shaw House',
+    'Food Junction (Great World City)',
+    'The Dining Avenue',
     'Spencer, Raynor and Langosh',
     'Lehner - Feeney',
     'Leuschke, Harris and Kuhlman',

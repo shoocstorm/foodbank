@@ -30,13 +30,13 @@ export function BlogView() {
         <Typography variant="h4" flexGrow={1}>
           Q&A
         </Typography>
-        <Button
+        {/* <Button
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
           New post
-        </Button>
+        </Button> */}
       </Box>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 5 }}>

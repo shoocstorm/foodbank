@@ -8,12 +8,16 @@ import Typography from '@mui/material/Typography';
 import { _products } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
+import Button from '@mui/material/Button';
+import { Iconify } from 'src/components/iconify';
+
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
 import { CartIcon } from '../product-cart-widget';
 import { ProductFilters } from '../product-filters';
 
 import type { FiltersProps } from '../product-filters';
+
 
 // ----------------------------------------------------------------------
 
@@ -84,11 +88,21 @@ export function ProductsView() {
 
   return (
     <DashboardContent>
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
+      <Typography display="flex" alignItems="center" variant="h4" sx={{ mb: 5 }}>
+      <Typography variant="h4" flexGrow={1}>
+      Donations
+        </Typography>
+        
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+        >
+          New Donation
+        </Button>
       </Typography>
-
-      <CartIcon totalItems={8} />
+{/* 
+      <CartIcon totalItems={8} /> */}
 
       <Box
         display="flex"

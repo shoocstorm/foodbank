@@ -81,6 +81,8 @@ export const _products = [...Array(4)].map((_, index) => {
     id: _id(index),
     price: 0.0,
     name: _productNames(index),
+    address: _company(index),
+    publishedAt: _times(index),
     priceSale: setIndex % 3 ? null : _price(index),
     coverUrl: `/assets/images/product/product-${setIndex}.webp`,
     colors:

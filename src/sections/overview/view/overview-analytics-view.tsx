@@ -94,13 +94,13 @@ export function OverviewAnalyticsView() {
 
         <Grid xs={12} md={6} lg={8}>
           <AnalyticsWebsiteVisits
-            title="Website visits"
+            title="Donations Trend (last 12 months)"
             subheader="(+43%) than last year"
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
               series: [
-                { name: 'Donors', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
-                { name: 'Beneficiaries', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
+                { name: 'Donation', data: [43, 33, 22, 37, 67, 68, 37, 24, 55] },
+                { name: 'Claims', data: [51, 70, 47, 67, 40, 37, 24, 70, 24] },
               ],
             }}
           />

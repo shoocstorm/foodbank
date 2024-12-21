@@ -14,6 +14,8 @@ import { ColorPreview } from 'src/components/color-utils';
 export type ProductItemProps = {
   id: string;
   name: string;
+  address: string;
+  publishedAt: string;
   price: number;
   status: string;
   coverUrl: string;
@@ -85,8 +87,11 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={product.colors} />
-          {renderPrice}
+          {/* <ColorPreview colors={product.colors} /> */}
+          {product.address}
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>          
+         Published at: {product.publishedAt}
         </Box>
       </Stack>
     </Card>
