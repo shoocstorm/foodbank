@@ -56,7 +56,7 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   const renderGender = (
     <Stack spacing={1}>
-      <Typography variant="subtitle2">Gender</Typography>
+      <Typography variant="subtitle2">Type</Typography>
       <FormGroup>
         {options.genders.map((option) => (
           <FormControlLabel
@@ -103,7 +103,7 @@ export function ProductFilters({
 
   const renderColors = (
     <Stack spacing={1}>
-      <Typography variant="subtitle2">Colors</Typography>
+      <Typography variant="subtitle2">Tags</Typography>
       <ColorPicker
         selected={filters.colors}
         onSelectColor={(colors) => onSetFilters({ colors: colors as string[] })}
@@ -115,7 +115,7 @@ export function ProductFilters({
 
   const renderPrice = (
     <Stack spacing={1}>
-      <Typography variant="subtitle2">Price</Typography>
+      <Typography variant="subtitle2">Distance</Typography>
       <RadioGroup>
         {options.price.map((option) => (
           <FormControlLabel
@@ -137,7 +137,7 @@ export function ProductFilters({
   const renderRating = (
     <Stack spacing={1}>
       <Typography variant="subtitle2" sx={{ mb: 2 }}>
-        Rating
+        Donor Rating
       </Typography>
 
       {options.ratings.map((option, index) => (

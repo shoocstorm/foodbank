@@ -121,9 +121,9 @@ export const _boolean = (index: number) =>
 
 export const _postTitles = (index: number) =>
   [
-    'Whiteboard Templates By Industry Leaders',
-    'Tesla Cybertruck-inspired camper trailer for Tesla fans who can’t just wait for the truck!',
-    'Designify Agency Landing Page Design',
+    'How to make an effective donation?',
+    '5 tips to make donations more effective',
+    'How to claim food donations quickly and easily?',
     '✨What is Done is Done ✨',
     'Fresh Prince',
     'Six Socks Studio',
@@ -205,10 +205,10 @@ export const _taskNames = (index: number) =>
 
 export const _productNames = (index: number) =>
   [
-    'Nike Air Force 1 NDESTRUKT',
-    'Nike Space Hippie 04',
-    'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
-    'Nike Blazer Low 77 Vintage',
+    'Egg Tarts',
+    'Fried Noodels',
+    'Bee Foon',
+    'Orange Juice',
     'Nike ZoomX SuperRep Surge',
     'Zoom Freak 2',
     'Nike Air Max Zephyr',

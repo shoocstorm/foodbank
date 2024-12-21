@@ -18,24 +18,22 @@ import type { FiltersProps } from '../product-filters';
 // ----------------------------------------------------------------------
 
 const GENDER_OPTIONS = [
-  { value: 'men', label: 'Men' },
-  { value: 'women', label: 'Women' },
-  { value: 'kids', label: 'Kids' },
+  { value: 'Perishable', label: 'Perishable' },
+  { value: 'Canned', label: 'Canned' }
 ];
 
 const CATEGORY_OPTIONS = [
   { value: 'all', label: 'All' },
-  { value: 'shose', label: 'Shose' },
-  { value: 'apparel', label: 'Apparel' },
-  { value: 'accessories', label: 'Accessories' },
+  { value: 'Halal', label: 'Halal' },
+  { value: 'Non-Halal', label: 'Non-Halal' }
 ];
 
 const RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
 
 const PRICE_OPTIONS = [
-  { value: 'below', label: 'Below $25' },
-  { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
+  { value: 'below', label: '< 1KM' },
+  { value: 'between', label: 'Between 1KM - 3KM' },
+  { value: 'above', label: '> 3KM' },
 ];
 
 const COLOR_OPTIONS = [

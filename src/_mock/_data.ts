@@ -30,17 +30,17 @@ export const _users = [...Array(24)].map((_, index) => ({
   status: index % 4 ? 'active' : 'banned',
   role:
     [
-      'Leader',
-      'Hr Manager',
-      'UI Designer',
-      'UX Designer',
-      'UI/UX Designer',
-      'Project Manager',
-      'Backend Developer',
-      'Full Stack Designer',
-      'Front End Developer',
-      'Full Stack Developer',
-    ][index] || 'UI Designer',
+      'Donor',
+      'Donor',
+      'Beneficiary',
+      'Admin',
+      'FB Employee',
+      'Donor',
+      'Beneficiary',
+      'Donor',
+      'Donor',
+      'Beneficiary',
+    ][index] || 'Donor',
 }));
 
 // ----------------------------------------------------------------------
@@ -74,12 +74,12 @@ const COLORS = [
   '#FFC107',
 ];
 
-export const _products = [...Array(24)].map((_, index) => {
+export const _products = [...Array(4)].map((_, index) => {
   const setIndex = index + 1;
 
   return {
     id: _id(index),
-    price: _price(index),
+    price: 0.0,
     name: _productNames(index),
     priceSale: setIndex % 3 ? null : _price(index),
     coverUrl: `/assets/images/product/product-${setIndex}.webp`,
@@ -92,7 +92,7 @@ export const _products = [...Array(24)].map((_, index) => {
       (setIndex === 24 && COLORS.slice(5, 6)) ||
       COLORS,
     status:
-      ([1, 3, 5].includes(setIndex) && 'sale') || ([4, 8, 12].includes(setIndex) && 'new') || '',
+      ([1, 3, 5].includes(setIndex) && 'Halal') || ([4, 8, 12].includes(setIndex) && 'Non-Halal') || '',
   };
 });
 
