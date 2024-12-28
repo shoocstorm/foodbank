@@ -213,6 +213,13 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         {...other}
       >
         {isSingle ? singleLogo : fullLogo}
+          
+      {/* <Box
+        component="img"      
+        src="/assets/icons/fb.png"
+      />
+       */}
+  
       </Box>
     );
   }

@@ -13,15 +13,36 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
+import { auth } from 'src/hooks/use-firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 // ----------------------------------------------------------------------
 
 export function SignInView() {
-  const router = useRouter();
-
+  const router = useRouter();  
+  const [email, setEmail] = useState('abc@abc.com');
+  const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
+  const handleSignIn = useCallback((loginEmail: string, loginPassword: string) => {
+
+    setIsLoading(true);
+    signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((userCredential) => {  
+      // Signed in 
+      const user = userCredential.user;
+      if (user) {
+        setIsSignedIn(true);
+        router.push('/');
+      } else {
+        console.error('Sign-in failed');
+      }
+    }).catch((error) => { 
+      console.error('Sign-in failed'.concat(error));
+      setIsLoading(false);
+    }).finally(() => {  setIsLoading(false); });
+    
   }, [router]);
 
   const renderForm = (
@@ -31,8 +52,10 @@ export function SignInView() {
         name="email"
         label="Email address"
         defaultValue="hello@gmail.com"
+        value={email}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
+        onChange={(e) => setEmail(e.target.value)}
       />
 
       <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
@@ -40,10 +63,12 @@ export function SignInView() {
       </Link>
 
       <TextField
-        fullWidth
+        fullWidth        
         name="password"
         label="Password"
         defaultValue="@demo1234"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
@@ -64,9 +89,10 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={handleSignIn}
+        disabled={isLoading || !email || !password} 
+        onClick={ () => handleSignIn(email, password)}
       >
-        Sign in
+       {isLoading? 'Authenticating...' : 'Sign in'}
       </LoadingButton>
     </Box>
   );
@@ -83,7 +109,9 @@ export function SignInView() {
         </Typography>
       </Box>
 
-      {renderForm}
+      {isSignedIn && <Typography variant="body2" color="text.secondary">Signed in successfully</Typography>}
+
+      {!isSignedIn && renderForm}
 
       <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
         <Typography
