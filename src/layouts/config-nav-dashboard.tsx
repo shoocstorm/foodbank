@@ -34,6 +34,16 @@ export const navData = [
     ),
   },
   {
+    title: 'My Claims',
+    path: '/my-claims',
+    icon: icon('ic-cart'),
+    info: (
+      <Label color="error" variant="inverted">
+        +5 today
+      </Label>
+    ),
+  },
+  {
     title: 'Q&A',
     path: '/blog',
     icon: icon('ic-blog'),

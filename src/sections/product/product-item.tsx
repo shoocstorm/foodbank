@@ -23,7 +23,7 @@ export type ProductItemProps = {
   priceSale: number | null;
 };
 
-export function ProductItem({ product }: { product: ProductItemProps }) {
+export function ProductItem({ product, onClick }: { product: ProductItemProps, onClick?: () => void }) {
   const renderStatus = (
     <Label
       variant="inverted"
@@ -74,7 +74,7 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
   );
 
   return (
-    <Card>
+    <Card onClick={onClick}>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {product.status && renderStatus}
 
