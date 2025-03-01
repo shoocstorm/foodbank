@@ -22,9 +22,15 @@
 - Clone the repo: `git clone https://github.com/minimal-ui-kit/material-kit-react.git`
 - Recommended: `Node.js v20.x`
 - **Install:** `npm i` or `yarn install`
-- **Start:** `npm run dev` or `yarn dev`
 - **Build:** `npm run build` or `yarn build`
+- **Start:** `npm run dev` or `yarn dev`
+
 - Open browser: `http://localhost:3039`
+
+## Use Claude Code (AI Coding Agent)
+- sudo npm install -g @anthropic-ai/claude-code
+- claude
+(requires API credit)
 
 ## Upgrade to PRO Version
 

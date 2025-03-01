@@ -99,7 +99,7 @@ export function ProductsView() {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
-        >
+        onClick={() => navigate('/post-donation')}>
           New Donation
         </Button>
       </Typography>
