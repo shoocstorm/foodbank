@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -16,6 +17,8 @@ import { Iconify } from 'src/components/iconify';
 import { auth } from 'src/hooks/use-firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+import { useUser } from 'src/contexts/user-context';
+
 // ----------------------------------------------------------------------
 
 export function SignInView() {
@@ -26,6 +29,8 @@ export function SignInView() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { setUser } = useUser();
+
   const handleSignIn = useCallback((loginEmail: string, loginPassword: string) => {
 
     setIsLoading(true);
@@ -34,6 +39,10 @@ export function SignInView() {
       const user = userCredential.user;
       if (user) {
         setIsSignedIn(true);
+        setUser({
+          displayName: user.displayName || '',
+          email: user.email || '',
+        });
         router.push('/');
       } else {
         console.error('Sign-in failed');
@@ -43,7 +52,7 @@ export function SignInView() {
       setIsLoading(false);
     }).finally(() => {  setIsLoading(false); });
     
-  }, [router]);
+  }, [router, setUser]);
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
@@ -103,7 +112,7 @@ export function SignInView() {
         <Typography variant="h5">Sign in</Typography>
         <Typography variant="body2" color="text.secondary">
           Don’t have an account?
-          <Link variant="subtitle2" sx={{ ml: 0.5 }}>
+          <Link variant="subtitle2" sx={{ ml: 0.5 }} component={RouterLink} to="/sign-up">
             Get started
           </Link>
         </Typography>

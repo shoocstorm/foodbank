@@ -1,8 +1,10 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, collection, addDoc, doc, setDoc} from "firebase/firestore";
 import { useCallback } from "react";
+import { sign } from "crypto";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -10,14 +12,13 @@ import { useCallback } from "react";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDnX2acjEWT2SHOkZ8PPh20ElKWI7raCuw",
-  authDomain: "food-hero-8dd9e.firebaseapp.com",
-  databaseURL: "https://food-hero-8dd9e-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "food-hero-8dd9e",
-  storageBucket: "food-hero-8dd9e.firebasestorage.app",
-  messagingSenderId: "969908622641",
-  appId: "1:969908622641:web:12f55ddc7b988a36a98c10",
-  measurementId: "G-DB2D3LN8DQ"
+  apiKey: "AIzaSyBjc-Q9kdh6IbGVXNUokT68gNM29n-cFmw",
+  authDomain: "foodshare-17a28.firebaseapp.com",
+  projectId: "foodshare-17a28",
+  storageBucket: "foodshare-17a28.firebasestorage.app",
+  messagingSenderId: "388525386548",
+  appId: "1:388525386548:web:12b18032b2ec8e49091361",
+  measurementId: "G-6SZH42S96L"
 };
 
 // Initialize Firebase
@@ -48,3 +49,59 @@ export const usePostDonation = () => {
 
   return { addDonation };
 };
+
+
+export const useSignup = () => {
+  const signUp = useCallback(async (userData: {
+    email: string;
+    password: string;
+    nickname: string;
+    organization: string
+  }) => {
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+      const user = userCredential.user;
+      const uid = user.uid;
+  
+      // Add extra user data to Firestore
+      await setDoc(doc(db, "users", uid), {
+        nickname: userData.nickname,
+        company: userData.organization,
+        // Add any other fields you need here
+      });
+  
+      console.log("User signed up and data saved to Firestore:", user);
+      // Redirect or handle successful signup
+    } catch (error: any) {
+      console.error("Error signing up or saving data:", error);
+      // Handle errors as before, including Firestore errors
+      if (error.code === 'auth/email-already-in-use') {
+        alert('That email address is already in use!');
+      } else if (error.code === 'auth/invalid-email') {
+        alert('The email address is invalid!');
+      } else if (error.code === 'auth/weak-password') {
+        alert('The password must be at least 6 characters!');
+      }
+      else {
+        alert('There was a problem signing up. Please try again.');
+      }
+    }
+  }, []);
+  
+  return { signUp };
+  // Example usage (updated HTML form required):
+  // const signupForm = document.getElementById("signupForm") as HTMLFormElement;
+  // signupForm.addEventListener("submit", async (e) => {
+  //   e.preventDefault();
+  //   const email = (document.getElementById("email") as HTMLInputElement).value;
+  //   const password = (document.getElementById("password") as HTMLInputElement).value;
+  //   const nickname = (document.getElementById("nickname") as HTMLInputElement).value;
+  //   const age = parseInt((document.getElementById("age") as HTMLInputElement).value);
+  //   const company = (document.getElementById("company") as HTMLInputElement).value;
+  
+  //   await signUp(email, password, nickname, age, company);
+  // });
+  
+  
+}

@@ -14,7 +14,29 @@ const PostDonation = () => {
   const [contactPhoneNumber, setContactPhoneNumber] = useState('');
   const [notes, setNotes] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [errors, setErrors] = useState({
+  title: '',
+  weight: '',
+  expiry: '',
+  address: '',
+  contactPhoneNumber: '',
+});
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const newErrors = {
+    title: title ? '' : 'Title is required',
+    weight: weight ? '' : 'Weight is required',
+    expiry: expiry ? '' : 'Expiry is required',
+    address: address ? '' : 'Address is required',
+    contactPhoneNumber: contactPhoneNumber ? '' : 'Contact Phone Number is required',
+  };
+
+  if (Object.values(newErrors).some(error => error)) {
+    setErrors(newErrors);
+    return;
+  }
+
     e.preventDefault();
     const donation = {
       title,
@@ -27,7 +49,7 @@ const PostDonation = () => {
       contactPhoneNumber,
       notes,
     };
-    await addDonation(donation);
+  await addDonation(donation);
     // Reset form
     setTitle('');
     setFoodType('Halal');
@@ -56,6 +78,8 @@ const PostDonation = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           autoFocus
+        error={!!errors.title}
+        helperText={errors.title}
         />
         <TextField
           margin="normal"
@@ -81,6 +105,8 @@ const PostDonation = () => {
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
+        error={!!errors.weight}
+        helperText={errors.weight}
         />
         <TextField
           margin="normal"
@@ -96,6 +122,7 @@ const PostDonation = () => {
           InputLabelProps={{
             shrink: true,
           }}
+
         />
         <TextField
           margin="normal"
@@ -107,6 +134,9 @@ const PostDonation = () => {
           type="number"
           value={expiry}
           onChange={(e) => setExpiry(e.target.value)}
+          error={!!errors.expiry}
+          helperText={errors.expiry}
+
         />
         <TextField
           margin="normal"
@@ -117,6 +147,8 @@ const PostDonation = () => {
           name="address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
+        error={!!errors.contactPhoneNumber}
+        helperText={errors.contactPhoneNumber}
         />
         <TextField
           margin="normal"
@@ -137,6 +169,8 @@ const PostDonation = () => {
           name="contactPhoneNumber"
           value={contactPhoneNumber}
           onChange={(e) => setContactPhoneNumber(e.target.value)}
+          error={!!errors.address}
+          helperText={errors.address}
         />
         <TextField
           margin="normal"
