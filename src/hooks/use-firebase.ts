@@ -55,7 +55,7 @@ export const useSignup = () => {
   const signUp = useCallback(async (userData: {
     email: string;
     password: string;
-    nickname: string;
+    displayName: string;
     organization: string
   }) => {
   
@@ -66,7 +66,7 @@ export const useSignup = () => {
   
       // Add extra user data to Firestore
       await setDoc(doc(db, "users", uid), {
-        nickname: userData.nickname,
+        displayName: userData.displayName,
         company: userData.organization,
         // Add any other fields you need here
       });
@@ -96,11 +96,11 @@ export const useSignup = () => {
   //   e.preventDefault();
   //   const email = (document.getElementById("email") as HTMLInputElement).value;
   //   const password = (document.getElementById("password") as HTMLInputElement).value;
-  //   const nickname = (document.getElementById("nickname") as HTMLInputElement).value;
+  //   const displayName = (document.getElementById("displayName") as HTMLInputElement).value;
   //   const age = parseInt((document.getElementById("age") as HTMLInputElement).value);
   //   const company = (document.getElementById("company") as HTMLInputElement).value;
   
-  //   await signUp(email, password, nickname, age, company);
+  //   await signUp(email, password, displayName, age, company);
   // });
   
   

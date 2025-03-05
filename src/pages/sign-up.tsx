@@ -53,7 +53,7 @@ const SignUp = () => {
     signUp({
       email,
       password,
-      nickname: displayName,
+      displayName,
       organization,
     }).then(() => {
       alert('Sign up successful! Redirecting to sign-in page...');

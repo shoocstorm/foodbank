@@ -7,6 +7,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
+import { useUser } from 'src/contexts/user-context';
 
 // ----------------------------------------------------------------------
 
@@ -36,13 +37,27 @@ const renderFallback = (
   </Box>
 );
 
+// Protected route component to check authentication
+const ProtectedRoute = () => {
+  const { user } = useUser();
+  
+  if (!user) {
+    console.log('User is not logged in');
+    return <Navigate to="/sign-in" replace />;
+  } 
+    console.log('%s logged in', user.email);
+  
+  
+  return <Outlet />;
+};
+
 export function Router() {
   return useRoutes([
     {
       element: (
         <DashboardLayout>
           <Suspense fallback={renderFallback}>
-            <Outlet />
+            <ProtectedRoute />
           </Suspense>
         </DashboardLayout>
       ),

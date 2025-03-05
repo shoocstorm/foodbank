@@ -14,16 +14,17 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-import { auth } from 'src/hooks/use-firebase';
+import { auth, db } from 'src/hooks/use-firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { useUser } from 'src/contexts/user-context';
+import { doc, getDoc } from 'firebase/firestore';
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();  
-  const [email, setEmail] = useState('abc@abc.com');
+  const [email, setEmail] = useState('aldrickwan2023@gmail.com');
   const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -38,12 +39,18 @@ export function SignInView() {
       // Signed in 
       const user = userCredential.user;
       if (user) {
-        setIsSignedIn(true);
-        setUser({
-          displayName: user.displayName || '',
-          email: user.email || '',
+        const userDetailPromise = getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+          const userDetail = docSnap.data();
+          console.log('Sign-in succeeded for user %s - %s', user.email , userDetail?.displayName);
+          setIsSignedIn(true);
+          setUser({
+            displayName: userDetail?.displayName || '',
+            email: user.email || '',
+          });
+          router.push('/');
         });
-        router.push('/');
+
+        
       } else {
         console.error('Sign-in failed');
       }
