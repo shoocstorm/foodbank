@@ -8,6 +8,7 @@ import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
+import MyDonationsPage from 'src/pages/my-donations';
 
 // ----------------------------------------------------------------------
 
@@ -70,6 +71,7 @@ export function Router() {
         { path: 'item-details/:id', element: <ItemDetailsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'my-claims', element: <MyClaimsPage /> },
+        { path: 'my-donations', element: <MyDonationsPage /> },
         { path: 'profile', element: <ProfilePage /> },
       ],
     },

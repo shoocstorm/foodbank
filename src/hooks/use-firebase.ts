@@ -1,9 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, setDoc} from "firebase/firestore";
-import { useCallback } from "react";
-import { sign } from "crypto";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { useCallback, useState, useEffect } from "react";
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -105,3 +105,38 @@ export const useSignup = () => {
   
   
 }
+
+export const useDonations = () => {
+  const [donations, setDonations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    // Create a query to get all donations, ordered by creation time
+    const q = query(collection(db, "donations"), orderBy("creationTime", "desc"));
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(q,
+      (querySnapshot) => {
+        const donationsList = querySnapshot.docs.map(donation => ({
+          id: donation.id,
+          ...donation.data()
+        }));
+        setDonations(donationsList);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error fetching donations:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return { donations, loading, error };
+};
