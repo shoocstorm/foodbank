@@ -44,6 +44,7 @@ export function SignInView() {
           console.log('Sign-in succeeded for user %s - %s', user.email , userDetail?.displayName);
           setIsSignedIn(true);
           setUser({
+            uid: user.uid,
             displayName: userDetail?.displayName || '',
             email: user.email || '',
           });

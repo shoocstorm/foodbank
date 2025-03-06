@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Snackbar } from '@mui/material';
 import './sign-up.css';
 import { useSignup } from '../hooks/use-firebase';
 
@@ -10,6 +10,7 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [organization, setOrganization] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const { signUp } = useSignup();
 
@@ -56,8 +57,13 @@ const SignUp = () => {
       displayName,
       organization,
     }).then(() => {
-      alert('Sign up successful! Redirecting to sign-in page...');
-      navigate('/sign-in');
+      /* alert('Sign up successful! Redirecting to sign-in page...'); */
+      setOpenSnackbar(true);
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate('/sign-in');
+      }, 2000);
+
     }).catch((error) => {
       console.error('Sign up failed:', error);
     });
@@ -130,6 +136,12 @@ const SignUp = () => {
           Already have an account? <Link to="/sign-in">Sign In</Link>
         </Typography>
       </Box>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        message="Sign up successfully! Let's Donate, Connect, and Feed Your Community."
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      />
     </Container>
   );
 };

@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Typography, Box, MenuItem, Snackbar } from '@mui/material';
+import { useUser } from 'src/contexts/user-context';
 import { usePostDonation } from '../hooks/use-firebase';
 
 const PostDonation = () => {
+  const { user } = useUser();
+
+  const navigate = useNavigate();
   const { addDonation } = usePostDonation();
   const [title, setTitle] = useState('');
   const [foodType, setFoodType] = useState('Halal');
@@ -13,31 +18,31 @@ const PostDonation = () => {
   const [contactPerson, setContactPerson] = useState('');
   const [contactPhoneNumber, setContactPhoneNumber] = useState('');
   const [notes, setNotes] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const [errors, setErrors] = useState({
-  title: '',
-  weight: '',
-  expiry: '',
-  address: '',
-  contactPhoneNumber: '',
-});
+    title: '',
+    weight: '',
+    expiry: '',
+    address: '',
+    contactPhoneNumber: '',
+  });
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  const newErrors = {
-    title: title ? '' : 'Title is required',
-    weight: weight ? '' : 'Weight is required',
-    expiry: expiry ? '' : 'Expiry is required',
-    address: address ? '' : 'Address is required',
-    contactPhoneNumber: contactPhoneNumber ? '' : 'Contact Phone Number is required',
-  };
-
-  if (Object.values(newErrors).some(error => error)) {
-    setErrors(newErrors);
-    return;
-  }
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const newErrors = {
+      title: title ? '' : 'Title is required',
+      weight: weight ? '' : 'Weight is required',
+      expiry: expiry ? '' : 'Expiry is required',
+      address: address ? '' : 'Address is required',
+      contactPhoneNumber: contactPhoneNumber ? '' : 'Contact Phone Number is required',
+    };
+
+    if (Object.values(newErrors).some(error => error)) {
+      setErrors(newErrors);
+      return;
+    }
+
     const donation = {
       title,
       foodType,
@@ -48,18 +53,31 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       contactPerson,
       contactPhoneNumber,
       notes,
+      createdBy: user?.uid,
+      creationTime: new Date().getTime(),
     };
-  await addDonation(donation);
-    // Reset form
-    setTitle('');
-    setFoodType('Halal');
-    setWeight('');
-    setPhoto(null);
-    setExpiry('');
-    setAddress('');
-    setContactPerson('');
-    setContactPhoneNumber('');
-    setNotes('');
+
+    try {
+      await addDonation(donation);
+      setOpenSnackbar(true);
+      // Reset form
+      setTitle('');
+      setFoodType('Halal');
+      setWeight('');
+      setPhoto(null);
+      setExpiry('');
+      setAddress('');
+      setContactPerson('');
+      setContactPhoneNumber('');
+      setNotes('');
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      console.error('Error posting donation:', error);
+    }
   };
 
   return (
@@ -67,7 +85,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       <Typography variant="h4" component="h1" gutterBottom>
         Post a Donation
       </Typography>
-      <Box component="form" onSubmit={(e) => handleSubmit(e)} noValidate sx={{ mt: 1 }}>
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
         <TextField
           margin="normal"
           required
@@ -192,6 +210,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           Post Donation
         </Button>
       </Box>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        message="Donation posted successfully!"
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      />
     </Container>
   );
 };

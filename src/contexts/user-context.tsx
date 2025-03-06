@@ -1,8 +1,10 @@
 import React, { createContext, useState, useContext, useMemo } from 'react';
 
 interface User {
+  uid: string;
   displayName: string;
   email: string;
+  company?: string;
 }
 
 interface UserContextType {
