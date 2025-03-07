@@ -90,22 +90,10 @@ export const useSignup = () => {
   }, []);
   
   return { signUp };
-  // Example usage (updated HTML form required):
-  // const signupForm = document.getElementById("signupForm") as HTMLFormElement;
-  // signupForm.addEventListener("submit", async (e) => {
-  //   e.preventDefault();
-  //   const email = (document.getElementById("email") as HTMLInputElement).value;
-  //   const password = (document.getElementById("password") as HTMLInputElement).value;
-  //   const displayName = (document.getElementById("displayName") as HTMLInputElement).value;
-  //   const age = parseInt((document.getElementById("age") as HTMLInputElement).value);
-  //   const company = (document.getElementById("company") as HTMLInputElement).value;
-  
-  //   await signUp(email, password, displayName, age, company);
-  // });
-  
   
 }
 
+// load donations from db
 export const useDonations = () => {
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

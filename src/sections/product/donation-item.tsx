@@ -11,7 +11,7 @@ import { ColorPreview } from 'src/components/color-utils';
 
 // ----------------------------------------------------------------------
 
-export type ProductItemProps = {
+export type DonationItemProps = {
   id: string;
   name: string;
   address: string;
@@ -23,11 +23,11 @@ export type ProductItemProps = {
   priceSale: number | null;
 };
 
-export function DonationItem({ product, onClick }: { product: ProductItemProps, onClick?: () => void }) {
+export function DonationItem({ donation, onClick }: { donation: DonationItemProps, onClick?: () => void }) {
   const renderStatus = (
     <Label
       variant="inverted"
-      color={(product.status === 'sale' && 'error') || 'info'}
+      color={(donation.status === 'sale' && 'error') || 'info'}
       sx={{
         zIndex: 9,
         top: 16,
@@ -36,15 +36,15 @@ export function DonationItem({ product, onClick }: { product: ProductItemProps, 
         textTransform: 'uppercase',
       }}
     >
-      {product.status}
+      {donation.status}
     </Label>
   );
 
   const renderImg = (
     <Box
       component="img"
-      alt={product.name}
-      src={product.coverUrl}
+      alt={donation.name}
+      src={donation.coverUrl}
       sx={{
         top: 0,
         width: 1,
@@ -65,7 +65,7 @@ export function DonationItem({ product, onClick }: { product: ProductItemProps, 
           textDecoration: 'line-through',
         }}
       >
-        {product.priceSale && fCurrency(product.priceSale)}
+        {donation.priceSale && fCurrency(donation.priceSale)}
       </Typography>
       &nbsp;
       Free
@@ -76,22 +76,22 @@ export function DonationItem({ product, onClick }: { product: ProductItemProps, 
   return (
     <Card onClick={onClick}>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        {product.status && renderStatus}
+        {donation.status && renderStatus}
 
         {renderImg}
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
         <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-          {product.name}
+          {donation.name}
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {/* <ColorPreview colors={product.colors} /> */}
-          {product.address}
+          {donation.address}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>          
-         Published at: {product.publishedAt}
+         Published at: {donation.publishedAt}
         </Box>
       </Stack>
     </Card>

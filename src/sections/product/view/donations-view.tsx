@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 
-import { _products } from 'src/_mock';
+import { _mockedDonations } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import Button from '@mui/material/Button';
@@ -145,9 +145,9 @@ export function DonationsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {_products.map((product) => (
+        {_mockedDonations.map((product) => (
           <Grid key={product.id} xs={12} sm={6} md={3}>
-            <DonationItem product={product} onClick={() => navigate(`/item-details/${product.id}`)} />
+            <DonationItem donation={product} onClick={() => navigate(`/item-details/${product.id}`)} />
           </Grid>
         ))}
       </Grid>

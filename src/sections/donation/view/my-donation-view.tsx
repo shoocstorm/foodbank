@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import { Button } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
+import { Iconify } from 'src/components/iconify';
 
 import { DonationItem } from '../../product/donation-item';
 import { DonationSort } from '../../product/donation-sort';
@@ -51,11 +53,19 @@ export function MyDonationView() {
 
   return (
     <DashboardContent>
-      <Typography display="flex" alignItems="center" variant="h4" sx={{ mb: 5 }}>
+      <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
           My Donations
         </Typography>
-      </Typography>
+                  
+        <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => navigate('/post-donation')}>
+            New Donation
+          </Button>
+      </Box>
 
       <Box
         display="flex"
@@ -82,7 +92,7 @@ export function MyDonationView() {
         {filteredDonations.map((donation) => (
           <Grid key={donation.id} xs={12} sm={6} md={3}>
             <DonationItem
-              product={{
+              donation={{
                 id: donation.id,
                 name: donation.title,
                 coverUrl: donation.photo || '/public/assets/images/donation/donation-1.webp',

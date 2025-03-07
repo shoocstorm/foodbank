@@ -4,16 +4,16 @@ import { CONFIG } from 'src/config-global';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import type { ProductItemProps } from 'src/sections/product/donation-item';
-import { _products } from 'src/_mock';
+import type { DonationItemProps } from 'src/sections/product/donation-item';
+import { _mockedDonations } from 'src/_mock';
+import { useDonations } from 'src/hooks/use-firebase';
 
 // ----------------------------------------------------------------------
 
 export default function ItemDetailsPage() {
   const { id } = useParams();
-
-  const [product, setProduct] = useState<ProductItemProps | null>(null);
-
+  const { donations } = useDonations();
+  const [donation, setDonation] = useState<DonationItemProps | null>(null);
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -24,16 +24,28 @@ export default function ItemDetailsPage() {
     setOpen(false);
   };
 
-useEffect(() => {
-    const fetchedProduct = _products.find((item) => item.id === id);
-    if (fetchedProduct) {
-      setProduct(fetchedProduct);
-    } else {
-      setProduct(null);
+  useEffect(() => {
+    if (donations) {
+      const fetched = donations.find((item) => item.id === id);
+      if (fetched) {
+        setDonation({
+          id: fetched.id,
+          name: fetched.title,
+          coverUrl: fetched.photo || '/public/assets/images/donation/donation-1.webp',
+          price: fetched.weight,
+          priceSale: null,
+          colors: [],
+          status: fetched.status || 'active',
+          address: fetched.address,
+          publishedAt: fetched.creationTime,
+        });
+      } else {
+        setDonation(null);
+      }
     }
-  }, [id]);
+  }, [id, donations]);
 
-  if (!product) {
+  if (!donation) {
     return <p>Loading...</p>;
   }
 
@@ -47,16 +59,16 @@ return (
         <h1>Item Details</h1>
         <p>Details for item with ID: {id}</p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
-          <img src={product.coverUrl} alt={product.name} style={{ width: '300px', height: '300px', borderRadius: '8px' }} />
+          <img src={donation.coverUrl} alt={donation.name} style={{ width: '300px', height: '300px', borderRadius: '8px' }} />
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
             Confirm Pickup
           </Button>
         </div>
-        <p><span style={{ color: 'gray' }}>Name:</span> {product.name}</p>
-        <p><span style={{ color: 'gray' }}>Address:</span> {product.address}</p>
-        <p><span style={{ color: 'gray' }}>Published At:</span> {product.publishedAt}</p>
-        <p><span style={{ color: 'gray' }}>Price:</span> {product.price}</p>
-        <p><span style={{ color: 'gray' }}>Status:</span> {product.status}</p>
+        <p><span style={{ color: 'gray' }}>Name:</span> {donation.name}</p>
+        <p><span style={{ color: 'gray' }}>Address:</span> {donation.address}</p>
+        <p><span style={{ color: 'gray' }}>Published At:</span> {donation.publishedAt}</p>
+        <p><span style={{ color: 'gray' }}>Price:</span> {donation.price}</p>
+        <p><span style={{ color: 'gray' }}>Status:</span> {donation.status}</p>
       </div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Pickup Confirmation</DialogTitle>
