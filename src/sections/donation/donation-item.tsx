@@ -8,6 +8,7 @@ import { Label } from 'src/components/label';
 import { User } from 'src/contexts/user-context';
 import { auth } from 'src/hooks/use-firebase';
 import { DonationStatus, DonationItemProps } from 'src/types/donation-types';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ export function DonationItem({ donation, user, onClick }: { donation: DonationIt
   const renderStatus = (
     <Label
       variant="inverted"
-      color={(donation.status === DonationStatus.ACTIVE && 'primary') || (donation.status === DonationStatus.CLAIMED && 'info') || (donation.status === DonationStatus.PICKED_UP && 'success') || 'info'}
+      color={(donation.status === DonationStatus.ACTIVE && 'primary') || (donation.status === DonationStatus.CLAIMED && 'info') || (donation.status === DonationStatus.PICKED_UP && 'success') || 'warning'}
       sx={{
         zIndex: 9,
         top: 16,
@@ -74,20 +75,21 @@ export function DonationItem({ donation, user, onClick }: { donation: DonationIt
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          ⚲&nbsp;{donation.address}
+          <Iconify icon="mdi:map-marker" width={20} sx={{ mr: 1 }} />{donation.address}
         </Box>
         {donation.claimedBy === auth.currentUser?.uid ? (
           <Box display="flex" alignItems="center" justifyContent="space-between">
-            {donation.contactPerson} {donation.contactPhone}
+           <Iconify icon="mdi:phone" width={20} sx={{ mr: 1 }} /> {donation.contactPerson} {donation.contactPhone}
           </Box>
         ) : (<Box />)
         }
 
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
-          Published by: {donation.createdBy === user?.uid ? 'You' : donation.createdBy}
+        <Iconify icon="mdi:calendar" width={16} sx={{ mr: 1 }} /> {new Date(donation.creationTime).toLocaleString()}
         </Box>
+
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
-          Published at: {new Date(donation.creationTime).toLocaleString()}
+          Published by: {donation.createdBy === user?.uid ? 'You' : donation.createdBy}
         </Box>
       </Stack>
     </Card>

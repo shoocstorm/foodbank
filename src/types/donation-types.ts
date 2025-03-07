@@ -11,14 +11,14 @@ export type DonationItemProps = {
   address: string;
   contactPerson?: string;
   contactPhone?: string;
-  creationTime: string;
+  creationTime: number;
   createdBy?: string,
   weight: number;
   status: DonationStatus;
   photo: string;
   colors: string[];
   collectionCode?: string;
-  expiry: number | null;
+  expiry: number;
   claimedBy?: string;
   claimedAt?: number;
   pickupAt?: number;

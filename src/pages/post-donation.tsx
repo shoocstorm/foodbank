@@ -76,7 +76,7 @@ const PostDonation = () => {
       
       // Redirect after 2 seconds
       setTimeout(() => {
-        navigate('/');
+        navigate('/donations');
       }, 2000);
     } catch (error) {
       console.error('Error posting donation:', error);

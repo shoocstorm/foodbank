@@ -87,6 +87,8 @@ export default function ItemDetailsPage() {
       </Helmet>
 
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+
+        {/* Donation Status Milestone Diagram */}
         <Box sx={{ mb: 4 }}>
           <Stack
             direction="row"
@@ -109,9 +111,9 @@ export default function ItemDetailsPage() {
                   width: 40,
                   height: 40,
                   borderRadius: '50%',
-                  bgcolor: donation.status === DonationStatus.ACTIVE ? 'primary.main' : 
-                          (donation.status === DonationStatus.CLAIMED || donation.status === DonationStatus.PICKED_UP) ? 'success.main' : 
-                          donation.status === DonationStatus.EXPIRED ? 'error.main' : 'grey.300',
+                  bgcolor: donation.status === DonationStatus.ACTIVE ? 'primary.main' :
+                    (donation.status === DonationStatus.CLAIMED || donation.status === DonationStatus.PICKED_UP) ? 'success.main' :
+                      donation.status === DonationStatus.EXPIRED ? 'error.main' : 'grey.300',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -128,8 +130,8 @@ export default function ItemDetailsPage() {
                   flex: 1,
                   height: 4,
                   bgcolor: donation.status === DonationStatus.ACTIVE ? 'grey.300' :
-                          (donation.status === DonationStatus.CLAIMED || donation.status === DonationStatus.PICKED_UP) ? 'success.main' :
-                          donation.status === DonationStatus.EXPIRED ? 'error.main' : 'grey.300'
+                    (donation.status === DonationStatus.CLAIMED || donation.status === DonationStatus.PICKED_UP) ? 'success.main' :
+                      donation.status === DonationStatus.EXPIRED ? 'error.main' : 'grey.300'
                 }}
               />
               {donation.status !== DonationStatus.EXPIRED ? (
@@ -141,7 +143,7 @@ export default function ItemDetailsPage() {
                       height: 40,
                       borderRadius: '50%',
                       bgcolor: donation.status === DonationStatus.CLAIMED ? 'primary.main' :
-                              donation.status === DonationStatus.PICKED_UP ? 'success.main' : 'grey.300',
+                        donation.status === DonationStatus.PICKED_UP ? 'success.main' : 'grey.300',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -217,10 +219,17 @@ export default function ItemDetailsPage() {
             )}
           </Stack>
         </Box>
+
+        {/* Donation Title */}
         <Typography variant="h4" gutterBottom>{donation.title}</Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>Details for item with ID: {id}</Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Typography fontSize={10} color="text.secondary">Published At:</Typography>
+          <Typography fontSize={10} color="text.secondary">{new Date(donation.creationTime).toLocaleString()}</Typography>
+        </Box>
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
+
+          {/* Card Photo & Status */}
           <Grid xs={12} md={6}>
             <Box sx={{ position: 'relative' }}>
               {donation.status && (
@@ -252,8 +261,63 @@ export default function ItemDetailsPage() {
               />
             </Box>
           </Grid>
+
+
+          {/* Donation Details & Buttons */}
           <Grid xs={12} md={6}>
             <Stack spacing={2}>
+
+              <Stack spacing={2}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Typography fontSize={14} color="text.secondary">Status:</Typography>
+                  <Typography>{donation.status} {donation.status === 'CLAIMED' && donation.claimedBy === auth.currentUser?.uid && '(by you)' || ' (by other user)'}</Typography>
+                </Box>
+                {donation.claimedBy === auth.currentUser?.uid && (
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <Typography fontSize={14} color="text.secondary">Collection Code:</Typography>
+                    <Typography fontWeight="bold" sx={{ textDecoration: donation.status === DonationStatus.PICKED_UP ? 'line-through' : 'none' }}>{donation.collectionCode}</Typography>
+                  </Box>
+                )}
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Typography fontSize={14} color="text.secondary">Address:</Typography>
+                  <Typography>{donation.address}</Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Typography fontSize={14} color="text.secondary">Weight:</Typography>
+                  <Typography>{donation.weight} (kg)</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Typography fontSize={14} color="text.secondary">Expiry:</Typography>
+                  <Typography>
+                    {(() => {
+                      const now = new Date().getTime();
+                      const creationTime = donation.creationTime;
+                      const expiryMillis = (donation.expiry * 60 * 60 * 1000);
+                      const remainingMillis = (creationTime + expiryMillis) - now;
+
+                      if (remainingMillis <= 0) {
+                        return 'Expired';
+                      }
+
+                      const remainingHours = Math.floor(remainingMillis / (60 * 60 * 1000));
+                      const remainingMinutes = Math.floor((remainingMillis % (60 * 60 * 1000)) / (60 * 1000));
+
+                      return `in ${remainingHours} hours ${remainingMinutes} minutes`;
+                    })()}
+                  </Typography>
+                </Box>
+                {donation.claimedBy === auth.currentUser?.uid && (
+
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Typography color="text.secondary">Contact:</Typography>
+                    <Typography>{donation.contactPerson} {donation.contactPhone}</Typography>
+                  </Box>
+
+                )}
+              </Stack>
+
+              {/* Action Buttons */}
               {donation.status === 'ACTIVE' && (
                 <Button
                   variant="contained"
@@ -284,7 +348,7 @@ export default function ItemDetailsPage() {
 
                   <Button
                     variant="contained"
-                    color="success"
+                    color="primary"
                     onClick={async () => {
                       setConfirming(true);
                       const success = await confirmPickup(donation.id);
@@ -306,47 +370,13 @@ export default function ItemDetailsPage() {
                 </>
               )}
 
-
             </Stack>
           </Grid>
-        </Grid>
 
-        <Stack spacing={2}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography color="text.secondary">Status:</Typography>
-            <Typography>{donation.status} {donation.status === 'CLAIMED' && donation.claimedBy !== auth.currentUser?.uid && ' (by other user)'}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography color="text.secondary">Address:</Typography>
-            <Typography>{donation.address}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography color="text.secondary">Published At:</Typography>
-            <Typography>{new Date(donation.creationTime).toLocaleString()}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography color="text.secondary">Weight:</Typography>
-            <Typography>{donation.weight} (kg)</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Typography color="text.secondary">Expiry:</Typography>
-            <Typography>{donation.expiry} (h)</Typography>
-          </Box>
-          {donation.status === 'CLAIMED' && donation.claimedBy === auth.currentUser?.uid && (
-            <>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Typography color="text.secondary">Collection Code:</Typography>
-              <Typography fontWeight="bold">{donation.collectionCode}</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Typography color="text.secondary">Contact:</Typography>
-              <Typography>{donation.contactPerson} {donation.contactPhone}</Typography>
-            </Box>
-            
-            </>
-          )}
-        </Stack>
+        </Grid>
       </Box>
+
+      {/* Notification Dialog */}
       <Dialog open={isNotificationDialogOpen} onClose={handleCloseNotificationDialog}>
         <DialogTitle>Claim Confirmation</DialogTitle>
         <DialogContent>
