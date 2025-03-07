@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 
-import { DonationsView } from '../sections/product/view/donations-view';
+import { DonationsView } from '../sections/donation/view/donations-view';
 
 // ----------------------------------------------------------------------
 

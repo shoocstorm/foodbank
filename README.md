@@ -34,7 +34,7 @@
 
 ## Deploy to Google Firebase Hosting
 ```
-firebase login
+firebase login (if required)
 firebase init (once only)
 npm run build
 firebase deploy

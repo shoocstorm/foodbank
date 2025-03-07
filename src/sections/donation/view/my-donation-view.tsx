@@ -11,8 +11,8 @@ import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
 import { Iconify } from 'src/components/iconify';
 
-import { DonationItem } from '../../product/donation-item';
-import { DonationSort } from '../../product/donation-sort';
+import { DonationItem } from '../donation-item';
+import { DonationSort } from '../donation-sort';
 
 export function MyDonationView() {
   const navigate = useNavigate();

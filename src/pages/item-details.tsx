@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Snackbar, Alert , Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
-import type { DonationItemProps } from 'src/sections/product/donation-item';
+import type { DonationItemProps } from 'src/sections/donation/donation-item';
 import { _mockedDonations } from 'src/_mock';
 import { useDonations, useUpdateDonationStatus } from 'src/hooks/use-firebase';
 
