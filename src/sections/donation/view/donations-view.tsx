@@ -62,11 +62,13 @@ const defaultFilters = {
 };
 
 export function DonationsView() {
-  const { donations} = useDonations();
+  const { donations } = useDonations();
   const { user } = useUser();
 
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState('featured');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 4;
 
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -88,27 +90,34 @@ export function DonationsView() {
     setFilters((prevValue) => ({ ...prevValue, ...updateState }));
   }, []);
 
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  }, []);
+
   const canReset = Object.keys(filters).some(
     (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
   );
 
+  // Calculate pagination
+  const totalPages = Math.ceil(donations.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedDonations = donations.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <DashboardContent>
-      <Box display="flex" alignItems="center" mb={5}>      
-          <Typography variant="h4" flexGrow={1}>
+      <Box display="flex" alignItems="center" mb={5}>
+        <Typography variant="h4" flexGrow={1}>
           Donations
-          </Typography>
-          
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="mingcute:add-line" />}
+        </Typography>
+
+        <Button
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => navigate('/post-donation')}>
-            New Donation
-          </Button>
-        </Box>
-{/* 
-      <CartIcon totalItems={8} /> */}
+          New Donation
+        </Button>
+      </Box>
 
       <Box
         display="flex"
@@ -149,14 +158,24 @@ export function DonationsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {donations.map((donation) => (
+        {paginatedDonations.map((donation) => (
           <Grid key={donation.id} xs={12} sm={6} md={3}>
             <DonationItem donation={donation} user={user} onClick={() => navigate(`/item-details/${donation.id}`)} />
           </Grid>
         ))}
       </Grid>
 
-      <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+
+      {totalPages > 0 && (
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ mt: 8, mx: 'auto' }}
+        />
+      )}
+
     </DashboardContent>
   );
 }

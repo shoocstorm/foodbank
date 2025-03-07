@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { Button } from '@mui/material';
+import { Button, Pagination } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
@@ -26,7 +26,7 @@ export function MyDonationsView() {
     if (user && donations) {
       // Filter donations by current user
       const userDonations = donations.filter((donation) => donation.createdBy === user.uid);
-      
+
       // Sort donations based on sortBy value
       const sortedDonations = [...userDonations].sort((a, b) => {
         switch (sortBy) {
@@ -51,20 +51,32 @@ export function MyDonationsView() {
     setSortBy(newSort);
   }, []);
 
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 4;
+
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  }, []);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredDonations.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedDonations = filteredDonations.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
           My Donations
         </Typography>
-                  
+
         <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="mingcute:add-line" />}
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => navigate('/post-donation')}>
-            New Donation
-          </Button>
+          New Donation
+        </Button>
       </Box>
 
       <Box
@@ -89,7 +101,7 @@ export function MyDonationsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {filteredDonations.map((donation) => (
+        {paginatedDonations.map((donation) => (
           <Grid key={donation.id} xs={12} sm={6} md={3}>
             <DonationItem
               donation={donation}
@@ -99,6 +111,18 @@ export function MyDonationsView() {
           </Grid>
         ))}
       </Grid>
+
+
+      {totalPages > 0 && (
+        <Pagination
+
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ mt: 8, mx: 'auto' }}
+        />
+      )}
     </DashboardContent>
   );
 }
