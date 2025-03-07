@@ -4,37 +4,18 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { fCurrency } from 'src/utils/format-number';
-
 import { Label } from 'src/components/label';
-import { ColorPreview } from 'src/components/color-utils';
 import { User } from 'src/contexts/user-context';
 import { auth } from 'src/hooks/use-firebase';
+import { DonationStatus, DonationItemProps } from 'src/types/donation-types';
 
 // ----------------------------------------------------------------------
-
-export type DonationItemProps = {
-  id: string;
-  title: string;
-  address: string;
-  contactPerson?: string;
-  contactPhone?: string;
-  creationTime: string;
-  createdBy?: string,
-  weight: number;
-  status: string;
-  photo: string;
-  colors: string[];
-  collectionCode?: string;
-  expiry: number | null;
-  claimedBy?: string;
-};
 
 export function DonationItem({ donation, user, onClick }: { donation: DonationItemProps, user: User | null, onClick?: () => void }) {
   const renderStatus = (
     <Label
       variant="inverted"
-      color={(donation.status === 'sale' && 'error') || 'info'}
+      color={(donation.status === DonationStatus.ACTIVE && 'primary') || (donation.status === DonationStatus.CLAIMED && 'info') || (donation.status === DonationStatus.PICKED_UP && 'success') || 'info'}
       sx={{
         zIndex: 9,
         top: 16,

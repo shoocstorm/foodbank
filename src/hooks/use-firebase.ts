@@ -4,6 +4,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/contexts/user-context";
+import { DonationStatus } from "src/types/donation-types";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -94,13 +95,13 @@ export const useSignup = () => {
 }
 
 // update a donation from a claim / unclaim action
-export const useUpdateDonationStatus = () => {
+export const useClaimUnClaim = () => {
   const updateStatus = useCallback(async (donationId: string, status: string, collectionCode?: string) => {
     try {
       const donationRef = doc(db, "donations", donationId);
       if (collectionCode) {
         // clain
-        await updateDoc(donationRef, { status, collectionCode, claimedBy: auth.currentUser?.uid });
+        await updateDoc(donationRef, { status, collectionCode, claimedBy: auth.currentUser?.uid, claimedAt: Date.now() });
       } else {
         // unclaim
         await updateDoc(donationRef, { status, claimedBy: null });
@@ -150,6 +151,23 @@ export const useDonations = () => {
   }, []);
 
   return { donations, loading, error };
+};
+
+// update a donation status to PICKED-UP
+export const useConfirmPickup = () => {
+  const confirmPickup = useCallback(async (donationId: string) => {
+    try {
+      const donationRef = doc(db, "donations", donationId);
+      await updateDoc(donationRef, { status: DonationStatus.PICKED_UP, pickupAt: Date.now() });
+      console.log("Document status updated to PICKED-UP successfully");
+      return true;
+    } catch (e) {
+      console.error("Error updating document: ", e);
+      return false;
+    }
+  }, []);
+
+  return { confirmPickup };
 };
 
 // fetches and listens to changes in the users collection in firestore

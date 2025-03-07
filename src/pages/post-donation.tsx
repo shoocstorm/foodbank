@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, MenuItem, Snackbar } from '@mui/material';
 import { useUser } from 'src/contexts/user-context';
+import { DonationStatus } from 'src/types/donation-types';
+
 import { usePostDonation } from '../hooks/use-firebase';
 
 const PostDonation = () => {
@@ -53,6 +55,7 @@ const PostDonation = () => {
       contactPerson,
       contactPhone,
       notes,
+      status: DonationStatus.ACTIVE,
       createdBy: user?.uid,
       creationTime: new Date().getTime(),
     };

@@ -19,7 +19,7 @@ export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const SignUpPage = lazy(() => import('src/pages/sign-up'));
 export const DonationsPage = lazy(() => import('src/pages/donations'));
 export const MyClaimsPage = lazy(() => import('src/pages/my-claims'));
-export const ItemDetailsPage = lazy(() => import('src/pages/item-details'));
+export const ItemDetailsPage = lazy(() => import('src/pages/donation-item-details'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const PostDonationPage = lazy(() => import('src/pages/post-donation'));
