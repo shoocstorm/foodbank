@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography, Box, MenuItem, Snackbar } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, MenuItem, Snackbar, Alert } from '@mui/material';
 import { useUser } from 'src/contexts/user-context';
 import { DonationStatus } from 'src/types/donation-types';
 
-import { usePostDonation } from '../hooks/use-firebase';
+import { useAddDonation } from '../hooks/use-firebase';
 
 const PostDonation = () => {
   const { user } = useUser();
 
   const navigate = useNavigate();
-  const { addDonation } = usePostDonation();
+  const { addDonation } = useAddDonation();
   const [title, setTitle] = useState('');
   const [foodType, setFoodType] = useState('Halal');
   const [weight, setWeight] = useState('');
@@ -20,7 +20,11 @@ const PostDonation = () => {
   const [contactPerson, setContactPerson] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [notes, setNotes] = useState('');
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ 
+    open: false, 
+    message: '', 
+    severity: 'success' 
+  });
 
   const [errors, setErrors] = useState({
     title: '',
@@ -62,7 +66,11 @@ const PostDonation = () => {
 
     try {
       await addDonation(donation);
-      setOpenSnackbar(true);
+      setSnackbar({
+        open: true,
+        message: 'Donation posted successfully!',
+        severity: 'success'
+      });
       // Reset form
       setTitle('');
       setFoodType('Halal');
@@ -79,7 +87,11 @@ const PostDonation = () => {
         navigate('/donations');
       }, 2000);
     } catch (error) {
-      console.error('Error posting donation:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to post donation. Please try again.',
+        severity: 'error'
+      });
     }
   };
 
@@ -214,11 +226,15 @@ const PostDonation = () => {
         </Button>
       </Box>
       <Snackbar
-        open={openSnackbar}
-        autoHideDuration={2000}
-        message="Donation posted successfully!"
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      />
+      >
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

@@ -41,13 +41,14 @@ export interface DonationProps {
   notes: string;
 };
 
-export const usePostDonation = () => {
+export const useAddDonation = () => {
   const addDonation = useCallback(async (donation: DonationProps) => {
     try {
       const docRef = await addDoc(collection(db, "donations"), donation);
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
+      throw e;
     }
   }, []);
 
@@ -153,13 +154,17 @@ export const useDonations = () => {
   return { donations, loading, error };
 };
 
-// update a donation status to PICKED-UP
+// update a donation status to PICKED-UP or revert back to CLAIMED
 export const useConfirmPickup = () => {
-  const confirmPickup = useCallback(async (donationId: string) => {
+  const updatePickupStatus = useCallback(async (donationId: string, status: string) => {
     try {
       const donationRef = doc(db, "donations", donationId);
-      await updateDoc(donationRef, { status: DonationStatus.PICKED_UP, pickupAt: Date.now() });
-      console.log("Document status updated to PICKED-UP successfully");
+      if (status === DonationStatus.PICKED_UP) {
+        await updateDoc(donationRef, { status, pickupAt: Date.now() });
+      } else {
+        await updateDoc(donationRef, { status, pickupAt: null });
+      }
+      console.log(`Document status updated to ${status} successfully`);
       return true;
     } catch (e) {
       console.error("Error updating document: ", e);
@@ -167,7 +172,7 @@ export const useConfirmPickup = () => {
     }
   }, []);
 
-  return { confirmPickup };
+  return { updatePickupStatus };
 };
 
 // fetches and listens to changes in the users collection in firestore

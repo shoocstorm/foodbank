@@ -25,7 +25,7 @@ export default function ItemDetailsPage() {
   const [undoing, setUndoing] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'info' | 'warning' | 'error' }>({ open: false, message: '', severity: 'success' });
   const [confirming, setConfirming] = useState(false);
-  const { confirmPickup } = useConfirmPickup();
+  const { updatePickupStatus } = useConfirmPickup();
 
   const handleUndoClaim = async () => {
     if (!donation || undoing) return;
@@ -351,7 +351,7 @@ export default function ItemDetailsPage() {
                     color="primary"
                     onClick={async () => {
                       setConfirming(true);
-                      const success = await confirmPickup(donation.id);
+                      const success = await updatePickupStatus(donation.id, DonationStatus.PICKED_UP);
                       setConfirming(false);
                       setSnackbar({
                         open: true,
@@ -370,6 +370,28 @@ export default function ItemDetailsPage() {
                 </>
               )}
 
+              {donation.status === DonationStatus.PICKED_UP && donation.claimedBy === auth.currentUser?.uid && (
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  onClick={async () => {
+                    setConfirming(true);
+                    const success = await updatePickupStatus(donation.id, DonationStatus.CLAIMED);
+                    setConfirming(false);
+                    setSnackbar({
+                      open: true,
+                      message: success ? 'Pickup status reverted successfully.' : 'Failed to revert pickup status. Please try again.',
+                      severity: success ? 'success' : 'error'
+                    });
+                  }}
+                  disabled={confirming}
+                  fullWidth
+                  startIcon={<Iconify icon="material-symbols:undo" />}
+                  sx={{ maxWidth: { sm: 200 } }}
+                >
+                  {confirming ? 'Processing...' : 'Undo Pickup'}
+                </Button>
+              )}
             </Stack>
           </Grid>
 

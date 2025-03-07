@@ -75,17 +75,20 @@ export function DonationItem({ donation, user, onClick }: { donation: DonationIt
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Iconify icon="mdi:map-marker" width={20} sx={{ mr: 1 }} />{donation.address}
+          <Iconify icon="mdi:map-marker" width={20} sx={{ mr: 1 }} />
+          <Typography fontSize={12} color="text.secondary">
+            {donation.address}
+          </Typography>
         </Box>
-        {donation.claimedBy === auth.currentUser?.uid ? (
+        {/* {donation.claimedBy === auth.currentUser?.uid ? (
           <Box display="flex" alignItems="center" justifyContent="space-between">
-           <Iconify icon="mdi:phone" width={20} sx={{ mr: 1 }} /> {donation.contactPerson} {donation.contactPhone}
+            <Iconify icon="mdi:phone" width={20} sx={{ mr: 1 }} /> {donation.contactPerson} {donation.contactPhone}
           </Box>
         ) : (<Box />)
-        }
+        } */}
 
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
-        <Iconify icon="mdi:calendar" width={16} sx={{ mr: 1 }} /> {new Date(donation.creationTime).toLocaleString()}
+          <Iconify icon="cuida:calendar-outline" width={16} sx={{ mr: 1 }} /> {new Date(donation.creationTime).toLocaleString()}
         </Box>
 
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
