@@ -3,6 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
+import { User } from "src/contexts/user-context";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -149,4 +150,42 @@ export const useDonations = () => {
   }, []);
 
   return { donations, loading, error };
+};
+
+// fetches and listens to changes in the users collection in firestore
+export const useUsers = () => {
+  const [users, setUsers] = useState<User[] | any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    // Create a query to get all users
+    const q = query(collection(db, "users"));
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(q,
+      (querySnapshot) => {
+        const usersList = querySnapshot.docs.map(user => ({
+          uid: user.id,
+          ...user.data(),
+          status: user.data().status || 'active',
+          isVerified: user.data().isVerified || false
+        }));
+        setUsers(usersList);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error fetching users:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return { users, loading, error };
 };

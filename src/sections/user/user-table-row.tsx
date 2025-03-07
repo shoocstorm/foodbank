@@ -12,21 +12,22 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
+import { User } from 'src/contexts/user-context';
 
 // ----------------------------------------------------------------------
 
-export type UserProps = {
-  id: string;
-  name: string;
-  role: string;
-  status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
-};
+// export type UserProps = {
+//   id: string;
+//   name: string;
+//   role: string;
+//   status: string;
+//   company: string;
+//   avatarUrl: string;
+//   isVerified: boolean;
+// };
 
 type UserTableRowProps = {
-  row: UserProps;
+  row: User;
   selected: boolean;
   onSelectRow: () => void;
 };
@@ -51,12 +52,12 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
 
         <TableCell component="th" scope="row">
           <Box gap={2} display="flex" alignItems="center">
-            <Avatar alt={row.name} src={row.avatarUrl} />
-            {row.name}
+            <Avatar alt={row.displayName} src={row.avatar} />
+            {row.displayName}
           </Box>
         </TableCell>
 
-        <TableCell>{row.company}</TableCell>
+        <TableCell>{row.organization}</TableCell>
 
         <TableCell>{row.role}</TableCell>
 

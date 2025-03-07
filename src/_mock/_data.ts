@@ -22,11 +22,12 @@ export const _myAccount = {
 // ----------------------------------------------------------------------
 
 export const _users = [...Array(24)].map((_, index) => ({
-  id: _id(index),
-  name: _fullName(index),
-  company: _company(index),
+  uid: _id(index),
+  displayName: _fullName(index),
+  email: '',
+  organization: _company(index),
   isVerified: _boolean(index),
-  avatarUrl: `/assets/images/avatar/avatar-${index + 1}.webp`,
+  avatar: `/assets/images/avatar/avatar-${index + 1}.webp`,
   status: index % 4 ? 'active' : 'pending',
   role:
     [

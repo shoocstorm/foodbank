@@ -49,7 +49,9 @@ export function SignInView() {
             email: user.email || '',
             organization: userDetail?.organization || '',
             role: userDetail?.role || '',
-            avatar: userDetail?.avatar || ''
+            avatar: userDetail?.avatar || '',
+            isVerified: userDetail?.isVerified || false,
+            status: userDetail?.status || 'Pending',
             // ... add more user fields
           });
           router.push('/');

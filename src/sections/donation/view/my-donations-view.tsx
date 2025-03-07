@@ -14,7 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { DonationItem } from '../donation-item';
 import { DonationSort } from '../donation-sort';
 
-export function MyDonationView() {
+export function MyDonationsView() {
   const navigate = useNavigate();
   const { user } = useUser();
   const { donations } = useDonations();

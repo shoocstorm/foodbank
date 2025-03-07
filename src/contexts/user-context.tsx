@@ -5,8 +5,10 @@ export interface User {
   displayName: string;
   email: string;
   role?: string;
+  status?: string; // active, pending, blocked
   organization?: string;
   avatar?: string;
+  isVerified?: boolean;
 }
 
 interface UserContextType {
