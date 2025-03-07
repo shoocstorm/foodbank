@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/config-global';
 
-import { ProductsView } from 'src/sections/product/view';
+import { DonationsView } from '../sections/product/view/donations-view';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ export default function Page() {
         <title> {`Donations - ${CONFIG.appName}`}</title>
       </Helmet>
 
-      <ProductsView />
+      <DonationsView />
     </>
   );
 }

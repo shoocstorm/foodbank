@@ -12,12 +12,12 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import Button from '@mui/material/Button';
 import { Iconify } from 'src/components/iconify';
 
-import { ProductItem } from '../product-item';
-import { ProductSort } from '../product-sort';
-import { CartIcon } from '../product-cart-widget';
-import { ProductFilters } from '../product-filters';
+import { DonationItem } from '../donation-item';
+import { DonationSort } from '../donation-sort';
+import { CartIcon } from '../donation-cart-widget';
+import { ProductFilters } from '../donation-filters';
 
-import type { FiltersProps } from '../product-filters';
+import type { FiltersProps } from '../donation-filters';
 
 
 // ----------------------------------------------------------------------
@@ -60,7 +60,7 @@ const defaultFilters = {
   category: CATEGORY_OPTIONS[0].value,
 };
 
-export function ProductsView() {
+export function DonationsView() {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState('featured');
 
@@ -90,19 +90,19 @@ export function ProductsView() {
 
   return (
     <DashboardContent>
-      <Typography display="flex" alignItems="center" variant="h4" sx={{ mb: 5 }}>
-      <Typography variant="h4" flexGrow={1}>
-      Donations
-        </Typography>
-        
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        onClick={() => navigate('/post-donation')}>
-          New Donation
-        </Button>
-      </Typography>
+      <Box display="flex" alignItems="center" mb={5}>      
+          <Typography variant="h4" flexGrow={1}>
+          Donations
+          </Typography>
+          
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => navigate('/post-donation')}>
+            New Donation
+          </Button>
+        </Box>
 {/* 
       <CartIcon totalItems={8} /> */}
 
@@ -131,7 +131,7 @@ export function ProductsView() {
             }}
           />
 
-          <ProductSort
+          <DonationSort
             sortBy={sortBy}
             onSort={handleSort}
             options={[
@@ -147,7 +147,7 @@ export function ProductsView() {
       <Grid container spacing={3}>
         {_products.map((product) => (
           <Grid key={product.id} xs={12} sm={6} md={3}>
-            <ProductItem product={product} onClick={() => navigate(`/item-details/${product.id}`)} />
+            <DonationItem product={product} onClick={() => navigate(`/item-details/${product.id}`)} />
           </Grid>
         ))}
       </Grid>

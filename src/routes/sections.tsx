@@ -17,7 +17,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const SignUpPage = lazy(() => import('src/pages/sign-up'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
+export const DonationsPage = lazy(() => import('src/pages/donations'));
 export const MyClaimsPage = lazy(() => import('src/pages/my-claims'));
 export const ItemDetailsPage = lazy(() => import('src/pages/item-details'));
 export const ProfilePage = lazy(() => import('src/pages/profile'));
@@ -66,7 +66,7 @@ export function Router() {
       children: [
         { element: <HomePage />, index: true },
         { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
+        { path: 'donations', element: <DonationsPage /> },
         { path: 'post-donation', element: <PostDonationPage /> },
         { path: 'item-details/:id', element: <ItemDetailsPage /> },
         { path: 'blog', element: <BlogPage /> },

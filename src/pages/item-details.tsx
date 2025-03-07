@@ -4,7 +4,7 @@ import { CONFIG } from 'src/config-global';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import type { ProductItemProps } from 'src/sections/product/product-item';
+import type { ProductItemProps } from 'src/sections/product/donation-item';
 import { _products } from 'src/_mock';
 
 // ----------------------------------------------------------------------

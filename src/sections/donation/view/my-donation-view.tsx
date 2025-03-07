@@ -9,8 +9,8 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
 
-import { ProductItem } from '../../product/product-item';
-import { ProductSort } from '../../product/product-sort';
+import { DonationItem } from '../../product/donation-item';
+import { DonationSort } from '../../product/donation-sort';
 
 export function MyDonationView() {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ export function MyDonationView() {
         sx={{ mb: 5 }}
       >
         <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-          <ProductSort
+          <DonationSort
             sortBy={sortBy}
             onSort={handleSort}
             options={[
@@ -81,11 +81,11 @@ export function MyDonationView() {
       <Grid container spacing={3}>
         {filteredDonations.map((donation) => (
           <Grid key={donation.id} xs={12} sm={6} md={3}>
-            <ProductItem
+            <DonationItem
               product={{
                 id: donation.id,
                 name: donation.title,
-                coverUrl: donation.photoUrl || '/public/assets/images/product/product-1.webp',
+                coverUrl: donation.photo || '/public/assets/images/donation/donation-1.webp',
                 price: donation.weight,
                 priceSale: null,
                 colors: [],

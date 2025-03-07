@@ -25,7 +25,7 @@ export const navData = [
   },
   {
     title: 'Donations',
-    path: '/products',
+    path: '/donations',
     icon: icon('ic-cart'),
     info: (
       <Label color="error" variant="inverted">

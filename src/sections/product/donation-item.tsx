@@ -23,7 +23,7 @@ export type ProductItemProps = {
   priceSale: number | null;
 };
 
-export function ProductItem({ product, onClick }: { product: ProductItemProps, onClick?: () => void }) {
+export function DonationItem({ product, onClick }: { product: ProductItemProps, onClick?: () => void }) {
   const renderStatus = (
     <Label
       variant="inverted"
