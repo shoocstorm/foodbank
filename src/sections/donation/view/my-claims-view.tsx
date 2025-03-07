@@ -4,17 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { Button } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
-import { Iconify } from 'src/components/iconify';
 
 import { DonationItem } from '../donation-item';
 import { DonationSort } from '../donation-sort';
 
-export function MyDonationView() {
+export function MyClaimsView() {
   const navigate = useNavigate();
   const { user } = useUser();
   const { donations } = useDonations();
@@ -24,11 +22,11 @@ export function MyDonationView() {
 
   useEffect(() => {
     if (user && donations) {
-      // Filter donations by current user
-      const userDonations = donations.filter((donation) => donation.createdBy === user.uid);
+      // Filter donations by claims
+      const claimedDonations = donations.filter((donation) => donation.claimedBy === user.uid);
       
       // Sort donations based on sortBy value
-      const sortedDonations = [...userDonations].sort((a, b) => {
+      const sortedDonations = [...claimedDonations].sort((a, b) => {
         switch (sortBy) {
           case 'newest':
             return b.creationTime - a.creationTime;
@@ -55,16 +53,8 @@ export function MyDonationView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          My Donations
+          My Claims
         </Typography>
-                  
-        <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={() => navigate('/post-donation')}>
-            New Donation
-          </Button>
       </Box>
 
       <Box

@@ -8,6 +8,8 @@ import { fCurrency } from 'src/utils/format-number';
 
 import { Label } from 'src/components/label';
 import { ColorPreview } from 'src/components/color-utils';
+import { User } from 'src/contexts/user-context';
+import { auth } from 'src/hooks/use-firebase';
 
 // ----------------------------------------------------------------------
 
@@ -15,16 +17,20 @@ export type DonationItemProps = {
   id: string;
   title: string;
   address: string;
+  contactPerson?: string;
+  contactPhone?: string;
   creationTime: string;
+  createdBy?: string,
   weight: number;
   status: string;
   photo: string;
   colors: string[];
   collectionCode?: string;
   expiry: number | null;
+  claimedBy?: string;
 };
 
-export function DonationItem({ donation, onClick }: { donation: DonationItemProps, onClick?: () => void }) {
+export function DonationItem({ donation, user, onClick }: { donation: DonationItemProps, user: User | null, onClick?: () => void }) {
   const renderStatus = (
     <Label
       variant="inverted"
@@ -66,11 +72,10 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
           textDecoration: 'line-through',
         }}
       >
-        {donation.expiry }
+        {donation.expiry}
       </Typography>
       &nbsp;
       Free
-      {/* {fCurrency(product.price)} */}
     </Typography>
   );
 
@@ -88,11 +93,20 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          {/* <ColorPreview colors={product.colors} /> */}
-          {donation.address}
+          ⚲&nbsp;{donation.address}
         </Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>          
-         Published at: { new Date(donation.creationTime).toLocaleString()}
+        {donation.claimedBy === auth.currentUser?.uid ? (
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            {donation.contactPerson} {donation.contactPhone}
+          </Box>
+        ) : (<Box />)
+        }
+
+        <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
+          Published by: {donation.createdBy === user?.uid ? 'You' : donation.createdBy}
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>
+          Published at: {new Date(donation.creationTime).toLocaleString()}
         </Box>
       </Stack>
     </Card>

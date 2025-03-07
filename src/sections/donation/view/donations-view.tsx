@@ -11,12 +11,13 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import Button from '@mui/material/Button';
 import { Iconify } from 'src/components/iconify';
+import { useDonations } from 'src/hooks/use-firebase';
+import { useUser } from 'src/contexts/user-context';
 
 import { DonationItem } from '../donation-item';
 import { DonationSort } from '../donation-sort';
 import { CartIcon } from '../donation-cart-widget';
-import { ProductFilters } from '../donation-filters';
-
+import { DonationFilters } from '../donation-filters';
 import type { FiltersProps } from '../donation-filters';
 
 
@@ -61,6 +62,9 @@ const defaultFilters = {
 };
 
 export function DonationsView() {
+  const { donations} = useDonations();
+  const { user } = useUser();
+
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState('featured');
 
@@ -114,7 +118,7 @@ export function DonationsView() {
         sx={{ mb: 5 }}
       >
         <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
+          <DonationFilters
             canReset={canReset}
             filters={filters}
             onSetFilters={handleSetFilters}
@@ -145,9 +149,9 @@ export function DonationsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {_mockedDonations.map((product) => (
-          <Grid key={product.id} xs={12} sm={6} md={3}>
-            <DonationItem donation={product} onClick={() => navigate(`/item-details/${product.id}`)} />
+        {donations.map((donation) => (
+          <Grid key={donation.id} xs={12} sm={6} md={3}>
+            <DonationItem donation={donation} user={user} onClick={() => navigate(`/item-details/${donation.id}`)} />
           </Grid>
         ))}
       </Grid>

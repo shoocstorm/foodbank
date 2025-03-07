@@ -27,18 +27,20 @@ export const analytics = getAnalytics(firebaseapp);
 export const auth = getAuth(firebaseapp);
 export const db = getFirestore(firebaseapp);
 
+export interface DonationProps {
+  title: string;
+  foodType: string;
+  weight: number;
+  photo: File | null;
+  expiry: number;
+  address: string;
+  contactPerson: string;
+  contactPhone: string;
+  notes: string;
+};
+
 export const usePostDonation = () => {
-  const addDonation = useCallback(async (donation: {
-    title: string;
-    foodType: string;
-    weight: number;
-    photo: File | null;
-    expiry: number;
-    address: string;
-    contactPerson: string;
-    contactPhoneNumber: string;
-    notes: string;
-  }) => {
+  const addDonation = useCallback(async (donation: DonationProps) => {
     try {
       const docRef = await addDoc(collection(db, "donations"), donation);
       console.log("Document written with ID: ", docRef.id);
@@ -90,15 +92,17 @@ export const useSignup = () => {
   
 }
 
-// load donations from db
+// update a donation from a claim / unclaim action
 export const useUpdateDonationStatus = () => {
   const updateStatus = useCallback(async (donationId: string, status: string, collectionCode?: string) => {
     try {
       const donationRef = doc(db, "donations", donationId);
       if (collectionCode) {
-        await updateDoc(donationRef, { status, collectionCode });
+        // clain
+        await updateDoc(donationRef, { status, collectionCode, claimedBy: auth.currentUser?.uid });
       } else {
-        await updateDoc(donationRef, { status });
+        // unclaim
+        await updateDoc(donationRef, { status, claimedBy: null });
       }
       console.log("Document status updated successfully");
       return true;
@@ -111,6 +115,7 @@ export const useUpdateDonationStatus = () => {
   return { updateStatus };
 };
 
+// load donations from db
 export const useDonations = () => {
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -16,7 +16,7 @@ const PostDonation = () => {
   const [expiry, setExpiry] = useState('');
   const [address, setAddress] = useState('');
   const [contactPerson, setContactPerson] = useState('');
-  const [contactPhoneNumber, setContactPhoneNumber] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -25,7 +25,7 @@ const PostDonation = () => {
     weight: '',
     expiry: '',
     address: '',
-    contactPhoneNumber: '',
+    contactPhone: '',
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +35,7 @@ const PostDonation = () => {
       weight: weight ? '' : 'Weight is required',
       expiry: expiry ? '' : 'Expiry is required',
       address: address ? '' : 'Address is required',
-      contactPhoneNumber: contactPhoneNumber ? '' : 'Contact Phone Number is required',
+      contactPhone: contactPhone ? '' : 'Contact Phone is required',
     };
 
     if (Object.values(newErrors).some(error => error)) {
@@ -51,7 +51,7 @@ const PostDonation = () => {
       expiry: parseInt(expiry, 10),
       address,
       contactPerson,
-      contactPhoneNumber,
+      contactPhone,
       notes,
       createdBy: user?.uid,
       creationTime: new Date().getTime(),
@@ -68,7 +68,7 @@ const PostDonation = () => {
       setExpiry('');
       setAddress('');
       setContactPerson('');
-      setContactPhoneNumber('');
+      setContactPhone('');
       setNotes('');
       
       // Redirect after 2 seconds
@@ -165,8 +165,8 @@ const PostDonation = () => {
           name="address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-        error={!!errors.contactPhoneNumber}
-        helperText={errors.contactPhoneNumber}
+        error={!!errors.contactPhone}
+        helperText={errors.contactPhone}
         />
         <TextField
           margin="normal"
@@ -182,11 +182,11 @@ const PostDonation = () => {
           margin="normal"
           required
           fullWidth
-          id="contactPhoneNumber"
+          id="contactPhone"
           label="Contact Phone Number"
-          name="contactPhoneNumber"
-          value={contactPhoneNumber}
-          onChange={(e) => setContactPhoneNumber(e.target.value)}
+          name="contactPhone"
+          value={contactPhone}
+          onChange={(e) => setContactPhone(e.target.value)}
           error={!!errors.address}
           helperText={errors.address}
         />

@@ -108,7 +108,7 @@ return (
         </div>
         <p><span style={{ color: 'gray' }}>Title:</span> {donation.title}</p>
         <p><span style={{ color: 'gray' }}>Status:</span> {donation.status || 'Active'}</p>
-        <p><span style={{ color: 'gray' }}>Address:</span> {donation.address}</p>
+        <p><span style={{ color: 'gray' }}>Address:⚲</span> {donation.address}</p>
         <p><span style={{ color: 'gray' }}>Published At:</span> { new Date(donation.creationTime).toLocaleString()}</p>
         <p><span style={{ color: 'gray' }}>Weight:</span> {donation.weight} (kg)</p>
         <p><span style={{ color: 'gray' }}>Expiry:</span> {donation.expiry} (h)</p>

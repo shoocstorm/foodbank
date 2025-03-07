@@ -24,7 +24,7 @@ import { doc, getDoc } from 'firebase/firestore';
 
 export function SignInView() {
   const router = useRouter();  
-  const [email, setEmail] = useState('aldrickwan2023@gmail.com');
+  const [email, setEmail] = useState('aldrick@gmail.com');
   const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
