@@ -4,7 +4,9 @@ interface User {
   uid: string;
   displayName: string;
   email: string;
-  company?: string;
+  role?: string;
+  organization?: string;
+  avatar?: string;
 }
 
 interface UserContextType {

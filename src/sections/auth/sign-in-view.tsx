@@ -47,6 +47,10 @@ export function SignInView() {
             uid: user.uid,
             displayName: userDetail?.displayName || '',
             email: user.email || '',
+            organization: userDetail?.organization || '',
+            role: userDetail?.role || '',
+            avatar: userDetail?.avatar || ''
+            // ... add more user fields
           });
           router.push('/');
         });

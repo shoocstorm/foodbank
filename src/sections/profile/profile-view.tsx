@@ -34,7 +34,7 @@ export function ProfileView() {
           >
             <Avatar
               alt={user?.displayName || 'User'}
-              src="/assets/images/avatar/avatar_1.jpg"
+              src={ user?.avatar || "assets/images/avatar/avatar-25.webp" }
               sx={{ width: 80, height: 80 }}
             />
 
@@ -64,6 +64,19 @@ export function ProfileView() {
                   Display Name
                 </Typography>
                 <Typography>{user?.displayName || 'User'}</Typography>
+              </Box>
+                   
+              <Box>
+                <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                  Role
+                </Typography>
+                <Typography>{user?.role || 'Donor'}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                  Organization
+                </Typography>
+                <Typography>{user?.organization}</Typography>
               </Box>
             </Stack>
           </Box>

@@ -56,7 +56,8 @@ export const useSignup = () => {
     email: string;
     password: string;
     displayName: string;
-    organization: string
+    organization: string;
+    role: string;
   }) => {
   
     try {
@@ -65,11 +66,7 @@ export const useSignup = () => {
       const uid = user.uid;
   
       // Add extra user data to Firestore
-      await setDoc(doc(db, "users", uid), {
-        displayName: userData.displayName,
-        company: userData.organization,
-        // Add any other fields you need here
-      });
+      await setDoc(doc(db, "users", uid), userData);
   
       console.log("User signed up and data saved to Firestore:", user);
       // Redirect or handle successful signup

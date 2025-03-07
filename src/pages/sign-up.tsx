@@ -56,6 +56,7 @@ const SignUp = () => {
       password,
       displayName,
       organization,
+      role: 'Donor',
     }).then(() => {
       /* alert('Sign up successful! Redirecting to sign-in page...'); */
       setOpenSnackbar(true);

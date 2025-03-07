@@ -62,7 +62,7 @@ export default function ItemDetailsPage() {
     if (donations) {
       const fetched = donations.find((item) => item.id === id);
       if (fetched) {
-        fetched.photo = fetched.photo || '/public/assets/images/donation/donation-1.webp';
+        fetched.photo = fetched.photo || '/assets/images/food-placeholder.png';
         setDonation(fetched);
       } else {
         setDonation(null);
@@ -81,7 +81,7 @@ return (
       </Helmet>
 
       <div style={{ padding: '48px' }}>
-        <h1>Item Details</h1>
+        <h1>Donation Details</h1>
         <p>Details for item with ID: {id}</p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
           <img src={donation.photo} alt={donation.title} style={{ width: '300px', height: '300px', borderRadius: '8px' }} />
@@ -107,9 +107,9 @@ return (
           </div>
         </div>
         <p><span style={{ color: 'gray' }}>Title:</span> {donation.title}</p>
-        <p><span style={{ color: 'gray' }}>Status:</span> {donation.status}</p>
+        <p><span style={{ color: 'gray' }}>Status:</span> {donation.status || 'Active'}</p>
         <p><span style={{ color: 'gray' }}>Address:</span> {donation.address}</p>
-        <p><span style={{ color: 'gray' }}>Published At:</span> {donation.creationTime}</p>
+        <p><span style={{ color: 'gray' }}>Published At:</span> { new Date(donation.creationTime).toLocaleString()}</p>
         <p><span style={{ color: 'gray' }}>Weight:</span> {donation.weight} (kg)</p>
         <p><span style={{ color: 'gray' }}>Expiry:</span> {donation.expiry} (h)</p>
         {donation.status === 'CLAIMED' && (

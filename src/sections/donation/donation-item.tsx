@@ -45,7 +45,7 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
     <Box
       component="img"
       alt={donation.title}
-      src={donation.photo}
+      src={donation.photo || '/assets/images/food-placeholder.png'}
       sx={{
         top: 0,
         width: 1,
@@ -92,7 +92,7 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
           {donation.address}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>          
-         Published at: {donation.creationTime}
+         Published at: { new Date(donation.creationTime).toLocaleString()}
         </Box>
       </Stack>
     </Card>
