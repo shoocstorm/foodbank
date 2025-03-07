@@ -92,20 +92,7 @@ export function MyDonationView() {
         {filteredDonations.map((donation) => (
           <Grid key={donation.id} xs={12} sm={6} md={3}>
             <DonationItem
-              donation={{
-                id: donation.id,
-                name: donation.title,
-                coverUrl: donation.photo || '/public/assets/images/donation/donation-1.webp',
-                price: donation.weight,
-                priceSale: null,
-                colors: [],
-                status: donation.status || 'active',
-                address: donation.address,
-                publishedAt: donation.creationTime,
-                // expiry: donation.expiry,
-                // description: donation.description,
-                // category: donation.foodType,
-              }}
+              donation={donation}
               onClick={() => navigate(`/item-details/${donation.id}`)}
             />
           </Grid>

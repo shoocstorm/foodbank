@@ -13,14 +13,15 @@ import { ColorPreview } from 'src/components/color-utils';
 
 export type DonationItemProps = {
   id: string;
-  name: string;
+  title: string;
   address: string;
-  publishedAt: string;
-  price: number;
+  creationTime: string;
+  weight: number;
   status: string;
-  coverUrl: string;
+  photo: string;
   colors: string[];
-  priceSale: number | null;
+  collectionCode?: string;
+  expiry: number | null;
 };
 
 export function DonationItem({ donation, onClick }: { donation: DonationItemProps, onClick?: () => void }) {
@@ -43,8 +44,8 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
   const renderImg = (
     <Box
       component="img"
-      alt={donation.name}
-      src={donation.coverUrl}
+      alt={donation.title}
+      src={donation.photo}
       sx={{
         top: 0,
         width: 1,
@@ -65,7 +66,7 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
           textDecoration: 'line-through',
         }}
       >
-        {donation.priceSale && fCurrency(donation.priceSale)}
+        {donation.expiry }
       </Typography>
       &nbsp;
       Free
@@ -83,7 +84,7 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
 
       <Stack spacing={2} sx={{ p: 3 }}>
         <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-          {donation.name}
+          {donation.title}
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -91,7 +92,7 @@ export function DonationItem({ donation, onClick }: { donation: DonationItemProp
           {donation.address}
         </Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mt: 1, fontSize: 12, color: 'text.secondary' }}>          
-         Published at: {donation.publishedAt}
+         Published at: {donation.creationTime}
         </Box>
       </Stack>
     </Card>

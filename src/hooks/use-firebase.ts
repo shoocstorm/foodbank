@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 
 
@@ -94,6 +94,26 @@ export const useSignup = () => {
 }
 
 // load donations from db
+export const useUpdateDonationStatus = () => {
+  const updateStatus = useCallback(async (donationId: string, status: string, collectionCode?: string) => {
+    try {
+      const donationRef = doc(db, "donations", donationId);
+      if (collectionCode) {
+        await updateDoc(donationRef, { status, collectionCode });
+      } else {
+        await updateDoc(donationRef, { status });
+      }
+      console.log("Document status updated successfully");
+      return true;
+    } catch (e) {
+      console.error("Error updating document: ", e);
+      return false;
+    }
+  }, []);
+
+  return { updateStatus };
+};
+
 export const useDonations = () => {
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

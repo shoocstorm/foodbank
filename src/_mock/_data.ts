@@ -80,11 +80,12 @@ export const _mockedDonations = [...Array(4)].map((_, index) => {
   return {
     id: _id(index),
     price: 0.0,
-    name: _productNames(index),
+    title: _productNames(index),
     address: _company(index),
-    publishedAt: _times(index),
-    priceSale: setIndex % 3 ? null : _price(index),
-    coverUrl: `/assets/images/product/product-${setIndex}.webp`,
+    creationTime: _times(index),
+    weight: 1,
+    expiry: setIndex % 3 ? null : _price(index),
+    photo: `/assets/images/product/product-${setIndex}.webp`,
     colors:
       (setIndex === 1 && COLORS.slice(0, 2)) ||
       (setIndex === 2 && COLORS.slice(1, 3)) ||
