@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/contexts/user-context";
 import { DonationStatus } from "src/types/donation-types";
@@ -38,6 +38,14 @@ export interface DonationProps {
   address: string;
   contactPerson: string;
   contactPhone: string;
+  notes: string;
+};
+
+export interface ClaimRequestProps {
+  donationId: string;
+  claimRequester: string;
+  requestAt: number;
+  claimResult: string;
   notes: string;
 };
 
@@ -97,22 +105,89 @@ export const useSignup = () => {
 
 // update a donation from a claim / unclaim action
 export const useClaimUnClaim = () => {
-  const updateStatus = useCallback(async (donationId: string, status: string, collectionCode?: string) => {
+  const updateStatus = useCallback(async (donationId: string, status: DonationStatus, collectionCode?: string) => {
+    let message = '';
+    let result = false;
+    
     try {
-      const donationRef = doc(db, "donations", donationId);
-      if (collectionCode) {
-        // clain
-        await updateDoc(donationRef, { status, collectionCode, claimedBy: auth.currentUser?.uid, claimedAt: Date.now() });
+      if (status === DonationStatus.CLAIMED) {
+        // Add claim request to queue
+        const claimRequest = {
+          donationId,
+          claimRequester: auth.currentUser?.uid,
+          requestAt: Date.now(),
+          claimResult: 'Pending',
+          notes: ''
+        };
+        await addDoc(collection(db, 'claimQueue'), claimRequest);
+
+        // Wait for 2 seconds
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Check claim queue for this donation
+        const queueQuery = query(
+          collection(db, 'claimQueue'),
+          orderBy('requestAt', 'asc')
+        );
+        const queueSnapshot = await getDocs(queueQuery);
+        const claimRequests: any[] = queueSnapshot.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter( (req: any) => req.donationId === donationId);
+
+        // Get current donation status
+        const donationRef = doc(db, "donations", donationId);
+        const donationSnap = await getDoc(donationRef);
+        const currentDonation = donationSnap.data();
+
+        if (claimRequests.length === 1 && 
+            claimRequests[0].claimRequester === auth.currentUser?.uid && 
+            currentDonation?.status === DonationStatus.ACTIVE) {
+          // Update donation status to claim this donation
+          await updateDoc(donationRef, { 
+            status, 
+            collectionCode, 
+            claimedBy: auth.currentUser?.uid, 
+            claimedAt: Date.now() 
+          });
+          
+          // Delete claim request from queue
+          const claimRef = doc(db, 'claimQueue', claimRequests[0].id);
+          await deleteDoc(claimRef);
+          
+          result = true;
+          message = "Donation claimed successfully";
+          console.log(message);
+
+        } else {
+          // Delete invalid claim requests of this user
+          const userClaimRequests = claimRequests.filter((req: any) => req.claimRequester === auth.currentUser?.uid);
+          if (userClaimRequests) {
+            userClaimRequests.forEach(async (req: any) => {
+              const claimRef = doc(db, 'claimQueue', req.id);
+              await deleteDoc(claimRef);
+            });
+
+            result = false;
+            message = "Concurrent claim detected or donation no longer active";
+            console.log(message);
+          }
+          
+        }
       } else {
         // unclaim
+        const donationRef = doc(db, "donations", donationId);
         await updateDoc(donationRef, { status, claimedBy: null });
+        result = true;
+        message = "Donation unclaimed successfully";
+        console.log(message);
       }
-      console.log("Document status updated successfully");
-      return true;
     } catch (e) {
+      message = "Error updating document: ";
       console.error("Error updating document: ", e);
-      return false;
+      result = false;
     }
+
+    return { result, message };
   }, []);
 
   return { updateStatus };

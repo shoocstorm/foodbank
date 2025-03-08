@@ -27,34 +27,36 @@ export default function ItemDetailsPage() {
   const [confirming, setConfirming] = useState(false);
   const { updatePickupStatus } = useConfirmPickup();
 
+  // Undo claim
   const handleUndoClaim = async () => {
     if (!donation || undoing) return;
 
     setUndoing(true);
-    const success = await updateStatus(donation.id, 'ACTIVE', '');
+    const { result, message } = await updateStatus(donation.id, DonationStatus.ACTIVE, '');
     setUndoing(false);
 
     setSnackbar({
       open: true,
-      message: success ? 'Successfully unclaimed the donation.' : 'Failed to undo claim. Please try again.',
-      severity: success ? 'success' : 'error'
+      message: result ? 'Successfully unclaimed the donation.' : message || 'Failed to undo claim. Please try again.',
+      severity: result ? 'success' : 'error'
     });
   };
 
+  // Claim
   const handleClickClaim = async () => {
     if (!donation || updating) return;
 
     setUpdating(true);
     const collectionCode = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-    const success = await updateStatus(donation.id, 'CLAIMED', collectionCode);
+    const { result, message }  = await updateStatus(donation.id, DonationStatus.CLAIMED, collectionCode);
     setUpdating(false);
 
-    if (success) {
+    if (result) {
       setOpenNotificationDialog(true);
     } else {
       setSnackbar({
         open: true,
-        message: 'Failed to claim the donation. Please try again.',
+        message: message || 'Failed to claim the donation. Please try again.',
         severity: 'error'
       });
     }
@@ -270,7 +272,10 @@ export default function ItemDetailsPage() {
               <Stack spacing={2}>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Typography fontSize={14} color="text.secondary">Status:</Typography>
-                  <Typography>{donation.status} {donation.status === 'CLAIMED' && donation.claimedBy === auth.currentUser?.uid && '(by you)' || ' (by other user)'}</Typography>
+                  <Typography>{donation.status} </Typography>
+                  {donation.status === 'CLAIMED' && (
+                    donation.claimedBy === auth.currentUser?.uid && '(by you)' || ' (by other user)'
+                  ) }
                 </Box>
                 {donation.claimedBy === auth.currentUser?.uid && (
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -399,22 +404,125 @@ export default function ItemDetailsPage() {
       </Box>
 
       {/* Notification Dialog */}
-      <Dialog open={isNotificationDialogOpen} onClose={handleCloseNotificationDialog}>
-        <DialogTitle>Claim Confirmation</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Your claim is confirmed. Please proceed to the pickup location to pick up the item.
-          </DialogContentText>
-          <DialogContentText>
-            Collection Code: {donation.collectionCode}
-          </DialogContentText>
+      <Dialog 
+        open={isNotificationDialogOpen} 
+        onClose={handleCloseNotificationDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9))',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            p: 2
+          }
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            p: 3
+          }}
+        >
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              bgcolor: 'success.light',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 3,
+              animation: 'scaleIn 0.5s ease-out'
+            }}
+          >
+            <Iconify
+              icon="eva:checkmark-fill"
+              sx={{
+                width: 40,
+                height: 40,
+                color: 'common.white',
+                animation: 'fadeIn 0.5s ease-out 0.2s both'
+              }}
+            />
+          </Box>
 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseNotificationDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions>
+          <DialogTitle
+            sx={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: 'text.primary',
+              textAlign: 'center',
+              mb: 2
+            }}
+          >
+            Claim Confirmation
+          </DialogTitle>
+
+          <DialogContent sx={{ textAlign: 'center' }}>
+            <DialogContentText
+              sx={{
+                color: 'text.primary',
+                fontSize: 16,
+                mb: 2
+              }}
+            >
+              Your claim is confirmed. Please proceed to the pickup location to pick up the item.
+            </DialogContentText>
+
+            <Box
+              sx={{
+                bgcolor: 'primary.lighter',
+                borderRadius: 1,
+                p: 2,
+                mt: 2
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{ color: 'primary.darker', mb: 1 }}
+              >
+                Collection Code
+              </Typography>
+              <Typography
+                variant="h4"
+                sx={{ color: 'primary.dark', letterSpacing: 2 }}
+              >
+                {donation.collectionCode}
+              </Typography>
+            </Box>
+          </DialogContent>
+
+          <DialogActions sx={{ mt: 3 }}>
+            <Button
+              onClick={handleCloseNotificationDialog}
+              variant="contained"
+              color="primary"
+              sx={{
+                minWidth: 120,
+                borderRadius: 1,
+                textTransform: 'none'
+              }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Box>
+
+        <style>
+          {`
+            @keyframes scaleIn {
+              from { transform: scale(0); opacity: 0; }
+              to { transform: scale(1); opacity: 1; }
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+          `}
+        </style>
       </Dialog>
       <Snackbar
         open={snackbar.open}
