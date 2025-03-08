@@ -66,13 +66,13 @@ export function UsersView() {
         <Typography variant="h4" flexGrow={1}>
           Users
         </Typography>
-        <Button
+        {/* <Button
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
         >
           New user
-        </Button>
+        </Button> */}
       </Box>
 
       <Card>
@@ -102,7 +102,8 @@ export function UsersView() {
                 }
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'company', label: 'Organization' },
                   { id: 'role', label: 'Role' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: 'status', label: 'Status' },

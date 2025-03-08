@@ -57,6 +57,8 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           </Box>
         </TableCell>
 
+        <TableCell>{row.email}</TableCell>
+
         <TableCell>{row.organization}</TableCell>
 
         <TableCell>{row.role}</TableCell>
@@ -109,8 +111,8 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           </MenuItem>
 
           <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            <Iconify icon="bitcoin-icons:verify-outline" />
+            Verify
           </MenuItem>
         </MenuList>
       </Popover>
