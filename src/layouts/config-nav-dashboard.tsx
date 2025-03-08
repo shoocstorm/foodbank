@@ -64,7 +64,7 @@ export function NavData() {
       ),
     },
     {
-      title: 'User',
+      title: 'User Management',
       path: '/user',
       icon: icon('ic-user'),
       info: (
@@ -74,7 +74,7 @@ export function NavData() {
       ),
     },
     {
-      title: 'Q&A',
+      title: 'User Center',
       path: '/blog',
       icon: icon('ic-blog'),
     },
