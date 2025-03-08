@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { Pagination } from '@mui/material';
+import { Pagination, Button } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
+import { Iconify } from 'src/components/iconify';
 
 import { DonationItem } from '../donation-item';
 import { DonationSort } from '../donation-sort';
@@ -62,6 +63,58 @@ export function MyClaimsView() {
     const startIndex = (page - 1) * itemsPerPage;
     const paginatedDonations = filteredDonations.slice(startIndex, startIndex + itemsPerPage);
 
+    // Empty state component
+    const EmptyState = () => (
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{ py: 10, textAlign: 'center' }}
+        >
+            <Box
+                sx={{
+                    mb: 3,
+                    width: 240,
+                    height: 240,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Iconify
+                    icon="solar:hand-stars-bold-duotone"
+                    width={160}
+                    sx={{
+                        color: 'primary.main',
+                        opacity: 0.8,
+                    }}
+                />
+            </Box>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>
+                No Claims Yet
+            </Typography>
+
+            <Typography
+                variant="body1"
+                sx={{ color: 'text.secondary', mb: 4 }}
+            >
+                Start your journey by claiming available donations in your area.
+                Every claim makes a difference!
+            </Typography>
+
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Iconify icon="material-symbols:search" />}
+                onClick={() => navigate('/donations')}
+            >
+                Browse Donations
+            </Button>
+        </Box>
+    );
+
     return (
         <DashboardContent>
             <Box display="flex" alignItems="center" mb={5}>
@@ -70,47 +123,53 @@ export function MyClaimsView() {
                 </Typography>
             </Box>
 
-            <Box
-                display="flex"
-                alignItems="center"
-                flexWrap="wrap-reverse"
-                justifyContent="flex-end"
-                sx={{ mb: 5 }}
-            >
-                <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-                    <DonationSort
-                        sortBy={sortBy}
-                        onSort={handleSort}
-                        options={[
-                            { value: 'newest', label: 'Newest' },
-                            { value: 'oldest', label: 'Oldest' },
-                            { value: 'expiryAsc', label: 'Expiry: Ascending' },
-                            { value: 'expiryDesc', label: 'Expiry: Descending' },
-                        ]}
-                    />
-                </Box>
-            </Box>
+            {filteredDonations.length === 0 ? (
+                <EmptyState />
+            ) : (
+                <>
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        flexWrap="wrap-reverse"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+                    >
+                        <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
+                            <DonationSort
+                                sortBy={sortBy}
+                                onSort={handleSort}
+                                options={[
+                                    { value: 'newest', label: 'Newest' },
+                                    { value: 'oldest', label: 'Oldest' },
+                                    { value: 'expiryAsc', label: 'Expiry: Ascending' },
+                                    { value: 'expiryDesc', label: 'Expiry: Descending' },
+                                ]}
+                            />
+                        </Box>
+                    </Box>
 
-            <Grid container spacing={3}>
-                {paginatedDonations.map((donation) => (
-                    <Grid key={donation.id} xs={12} sm={6} md={3}>
-                        <DonationItem
-                            donation={donation}
-                            user={user}
-                            onClick={() => navigate(`/item-details/${donation.id}`)}
-                        />
+                    <Grid container spacing={3}>
+                        {paginatedDonations.map((donation) => (
+                            <Grid key={donation.id} xs={12} sm={6} md={3}>
+                                <DonationItem
+                                    donation={donation}
+                                    user={user}
+                                    onClick={() => navigate(`/item-details/${donation.id}`)}
+                                />
+                            </Grid>
+                        ))}
                     </Grid>
-                ))}
-            </Grid>
 
-            {totalPages > 0 && (
-                <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={handlePageChange}
-                    color="primary"
-                    sx={{ mt: 8, mx: 'auto' }}
-                />
+                    {totalPages > 0 && (
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={handlePageChange}
+                            color="primary"
+                            sx={{ mt: 8, mx: 'auto' }}
+                        />
+                    )}
+                </>
             )}
         </DashboardContent>
     );

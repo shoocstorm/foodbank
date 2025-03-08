@@ -406,7 +406,7 @@ export default function ItemDetailsPage() {
                   variant="outlined"
                   color="error"
                   onClick={() => setDeleteDialogOpen(true)}
-                  disabled={deleting}
+                  disabled={deleting || donation.status === DonationStatus.CLAIMED}
                   fullWidth
                   startIcon={<Iconify icon="material-symbols:delete" />}
                   sx={{ maxWidth: { sm: 200 } }}

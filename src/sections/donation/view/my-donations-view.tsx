@@ -63,6 +63,58 @@ export function MyDonationsView() {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedDonations = filteredDonations.slice(startIndex, startIndex + itemsPerPage);
 
+  // Empty state component
+  const EmptyState = () => (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      sx={{ py: 10, textAlign: 'center' }}
+    >
+      <Box
+        sx={{
+          mb: 3,
+          width: 240,
+          height: 240,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Iconify
+          icon="solar:box-minimalistic-bold-duotone"
+          width={160}
+          sx={{
+            color: 'primary.main',
+            opacity: 0.8,
+          }}
+        />
+      </Box>
+
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        No Donations Yet
+      </Typography>
+
+      <Typography
+        variant="body1"
+        sx={{ color: 'text.secondary', mb: 4, maxWidth: 480 }}
+      >
+        Start sharing your surplus food with those in need.
+        Your donations can help fight hunger and reduce food waste in your community.
+      </Typography>
+
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Iconify icon="mingcute:add-line" />}
+        onClick={() => navigate('/post-donation')}
+      >
+        Post a Donation
+      </Button>
+    </Box>
+  );
+
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
@@ -72,20 +124,24 @@ export function MyDonationsView() {
 
         <Button
           variant="contained"
-          color="inherit"
+          color="primary"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => navigate('/post-donation')}>
           New Donation
         </Button>
       </Box>
 
-      <Box
-        display="flex"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
+      {filteredDonations.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <>
+          <Box
+            display="flex"
+            alignItems="center"
+            flexWrap="wrap-reverse"
+            justifyContent="flex-end"
+            sx={{ mb: 5 }}
+          >
         <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
           <DonationSort
             sortBy={sortBy}
@@ -115,13 +171,15 @@ export function MyDonationsView() {
 
       {totalPages > 0 && (
         <Pagination
-
           count={totalPages}
           page={page}
           onChange={handlePageChange}
           color="primary"
           sx={{ mt: 8, mx: 'auto' }}
         />
+      )}
+
+    </>
       )}
     </DashboardContent>
   );

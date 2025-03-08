@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 
 import { Label } from 'src/components/label';
 import { User } from 'src/contexts/user-context';
-import { auth } from 'src/hooks/use-firebase';
 import { DonationStatus, DonationItemProps } from 'src/types/donation-types';
 import { Iconify } from 'src/components/iconify';
 

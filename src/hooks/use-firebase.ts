@@ -49,20 +49,100 @@ export interface ClaimRequestProps {
   notes: string;
 };
 
+export enum DBTables {
+  DONATIONS = 'donations',
+  USERS = 'users',
+  CLAIM_QUEUE = 'claimQueue'
+};
+
+// fetches and listens to changes in the donations collection in firestore
+export const useDonations = () => {
+  const [donations, setDonations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    // Create a query to get all donations, ordered by creation time
+    const q = query(collection(db, DBTables.DONATIONS), orderBy("creationTime", "desc"));
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(q,
+      (querySnapshot) => {
+        const donationsList = querySnapshot.docs.map(donation => ({
+          id: donation.id,
+          ...donation.data()
+        }));
+        setDonations(donationsList);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error fetching donations:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return { donations, loading, error };
+};
+
+// fetches and listens to changes in the users collection in firestore
+export const useUsers = () => {
+  const [users, setUsers] = useState<User[] | any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    // Create a query to get all users
+    const q = query(collection(db, DBTables.USERS));
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(q,
+      (querySnapshot) => {
+        const usersList = querySnapshot.docs.map(user => ({
+          uid: user.id,
+          ...user.data(),
+          status: user.data().status || 'active',
+          isVerified: user.data().isVerified || false
+        }));
+        setUsers(usersList);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error fetching users:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  return { users, loading, error };
+};
+
+// add a donation
 export const useAddDonation = () => {
   const addDonation = useCallback(async (donation: DonationProps) => {
     try {
-      const docRef = await addDoc(collection(db, "donations"), donation);
-      console.log("Document written with ID: ", docRef.id);
+      const docRef = await addDoc(collection(db, DBTables.DONATIONS), donation);
+      console.log("Donation written with ID: ", docRef.id);
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error adding donation: ", e);
       throw e;
     }
   }, []);
 
   return { addDonation };
 };
-
 
 export const useSignup = () => {
   const signUp = useCallback(async (userData: {
@@ -79,7 +159,7 @@ export const useSignup = () => {
       const uid = user.uid;
   
       // Add extra user data to Firestore
-      await setDoc(doc(db, "users", uid), userData);
+      await setDoc(doc(db, DBTables.USERS, uid), userData);
   
       console.log("User signed up and data saved to Firestore:", user);
       // Redirect or handle successful signup
@@ -119,14 +199,15 @@ export const useClaimUnClaim = () => {
           claimResult: 'Pending',
           notes: ''
         };
-        await addDoc(collection(db, 'claimQueue'), claimRequest);
+        await addDoc(collection(db, DBTables.CLAIM_QUEUE), claimRequest);
 
-        // Wait for 2 seconds
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Wait for 1 seconds for data synchronization (i.e.: if the claim request was added during a offline mode)
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Check claim queue for this donation
         const queueQuery = query(
-          collection(db, 'claimQueue'),
+          collection(db, DBTables.CLAIM_QUEUE),
+          where('donationId', '==', donationId),
           orderBy('requestAt', 'asc')
         );
         const queueSnapshot = await getDocs(queueQuery);
@@ -134,8 +215,8 @@ export const useClaimUnClaim = () => {
           .map(d => ({ id: d.id, ...d.data() }))
           .filter( (req: any) => req.donationId === donationId);
 
-        // Get current donation status
-        const donationRef = doc(db, "donations", donationId);
+        // Get current donation status to check if it's still active
+        const donationRef = doc(db, DBTables.DONATIONS, donationId);
         const donationSnap = await getDoc(donationRef);
         const currentDonation = donationSnap.data();
 
@@ -151,7 +232,7 @@ export const useClaimUnClaim = () => {
           });
           
           // Delete claim request from queue
-          const claimRef = doc(db, 'claimQueue', claimRequests[0].id);
+          const claimRef = doc(db, DBTables.CLAIM_QUEUE, claimRequests[0].id);
           await deleteDoc(claimRef);
           
           result = true;
@@ -163,7 +244,7 @@ export const useClaimUnClaim = () => {
           const userClaimRequests = claimRequests.filter((req: any) => req.claimRequester === auth.currentUser?.uid);
           if (userClaimRequests) {
             userClaimRequests.forEach(async (req: any) => {
-              const claimRef = doc(db, 'claimQueue', req.id);
+              const claimRef = doc(db, DBTables.CLAIM_QUEUE, req.id);
               await deleteDoc(claimRef);
             });
 
@@ -175,7 +256,7 @@ export const useClaimUnClaim = () => {
         }
       } else {
         // unclaim
-        const donationRef = doc(db, "donations", donationId);
+        const donationRef = doc(db, DBTables.DONATIONS, donationId);
         await updateDoc(donationRef, { status, claimedBy: null });
         result = true;
         message = "Donation unclaimed successfully";
@@ -193,47 +274,11 @@ export const useClaimUnClaim = () => {
   return { updateStatus };
 };
 
-// load donations from db
-export const useDonations = () => {
-  const [donations, setDonations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    // Create a query to get all donations, ordered by creation time
-    const q = query(collection(db, "donations"), orderBy("creationTime", "desc"));
-
-    // Set up real-time listener
-    const unsubscribe = onSnapshot(q,
-      (querySnapshot) => {
-        const donationsList = querySnapshot.docs.map(donation => ({
-          id: donation.id,
-          ...donation.data()
-        }));
-        setDonations(donationsList);
-        setLoading(false);
-        setError(null);
-      },
-      (err) => {
-        console.error("Error fetching donations:", err);
-        setError(err);
-        setLoading(false);
-      }
-    );
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  return { donations, loading, error };
-};
-
 // update a donation status to PICKED-UP or revert back to CLAIMED
 export const useConfirmPickup = () => {
   const updatePickupStatus = useCallback(async (donationId: string, status: string) => {
     try {
-      const donationRef = doc(db, "donations", donationId);
+      const donationRef = doc(db, DBTables.DONATIONS, donationId);
       if (status === DonationStatus.PICKED_UP) {
         await updateDoc(donationRef, { status, pickupAt: Date.now() });
       } else {
@@ -250,44 +295,7 @@ export const useConfirmPickup = () => {
   return { updatePickupStatus };
 };
 
-// fetches and listens to changes in the users collection in firestore
-export const useUsers = () => {
-  const [users, setUsers] = useState<User[] | any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    // Create a query to get all users
-    const q = query(collection(db, "users"));
-
-    // Set up real-time listener
-    const unsubscribe = onSnapshot(q,
-      (querySnapshot) => {
-        const usersList = querySnapshot.docs.map(user => ({
-          uid: user.id,
-          ...user.data(),
-          status: user.data().status || 'active',
-          isVerified: user.data().isVerified || false
-        }));
-        setUsers(usersList);
-        setLoading(false);
-        setError(null);
-      },
-      (err) => {
-        console.error("Error fetching users:", err);
-        setError(err);
-        setLoading(false);
-      }
-    );
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
-
-  return { users, loading, error };
-};
-
+// delete a donation
 export const useDeleteDonation = () => {
   const deleteDonation = useCallback(async (donationId: string) => {
     let message = '';
@@ -295,7 +303,7 @@ export const useDeleteDonation = () => {
 
     try {
       // Get the donation document
-      const donationRef = doc(db, "donations", donationId);
+      const donationRef = doc(db, DBTables.DONATIONS, donationId);
       const donationSnap = await getDoc(donationRef);
       const donationData = donationSnap.data();
 
@@ -307,7 +315,7 @@ export const useDeleteDonation = () => {
 
       // Delete any claim requests for this donation
       const queueQuery = query(
-        collection(db, 'claimQueue'),
+        collection(db, DBTables.CLAIM_QUEUE),
         where('donationId', '==', donationId)
       );
       const queueSnapshot = await getDocs(queueQuery);

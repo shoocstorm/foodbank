@@ -14,7 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-import { auth, db } from 'src/hooks/use-firebase';
+import { auth, db, DBTables } from 'src/hooks/use-firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { useUser } from 'src/contexts/user-context';
@@ -23,7 +23,7 @@ import { doc, getDoc } from 'firebase/firestore';
 // ----------------------------------------------------------------------
 
 export function SignInView() {
-  const router = useRouter();  
+  const router = useRouter();
   const [email, setEmail] = useState('aldrick@gmail.com');
   const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
@@ -35,13 +35,13 @@ export function SignInView() {
   const handleSignIn = useCallback((loginEmail: string, loginPassword: string) => {
 
     setIsLoading(true);
-    signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((userCredential) => {  
+    signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
       if (user) {
-        const userDetailPromise = getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+        getDoc(doc(db, DBTables.USERS, user.uid)).then((docSnap) => {
           const userDetail = docSnap.data();
-          console.log('Sign-in succeeded for user %s - %s', user.email , userDetail?.displayName);
+          console.log('Sign-in succeeded for user %s - %s', user.email, userDetail?.displayName);
           setIsSignedIn(true);
           setUser({
             uid: user.uid,
@@ -57,15 +57,15 @@ export function SignInView() {
           router.push('/');
         });
 
-        
+
       } else {
         console.error('Sign-in failed');
       }
-    }).catch((error) => { 
+    }).catch((error) => {
       console.error('Sign-in failed'.concat(error));
       setIsLoading(false);
-    }).finally(() => {  setIsLoading(false); });
-    
+    }).finally(() => { setIsLoading(false); });
+
   }, [router, setUser]);
 
   const renderForm = (
@@ -85,7 +85,7 @@ export function SignInView() {
       </Link>
 
       <TextField
-        fullWidth        
+        fullWidth
         name="password"
         label="Password"
         value={password}
@@ -110,10 +110,10 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        disabled={isLoading || !email || !password} 
-        onClick={ () => handleSignIn(email, password)}
+        disabled={isLoading || !email || !password}
+        onClick={() => handleSignIn(email, password)}
       >
-       {isLoading? 'Authenticating...' : 'Sign in'}
+        {isLoading ? 'Authenticating...' : 'Sign in'}
       </LoadingButton>
     </Box>
   );

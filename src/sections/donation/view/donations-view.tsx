@@ -112,7 +112,7 @@ export function DonationsView() {
 
         <Button
           variant="contained"
-          color="inherit"
+          color="primary"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => navigate('/post-donation')}>
           New Donation
