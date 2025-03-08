@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CONFIG } from 'src/config-global';
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
@@ -10,7 +10,7 @@ import Button from '@mui/material/Button';
 import { Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 import { DonationStatus, type DonationItemProps } from 'src/types/donation-types';
-import { auth, useDonations, useClaimUnClaim, useConfirmPickup } from 'src/hooks/use-firebase';
+import { auth, useDonations, useClaimUnClaim, useConfirmPickup, useDeleteDonation } from 'src/hooks/use-firebase';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
@@ -26,6 +26,10 @@ export default function ItemDetailsPage() {
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'info' | 'warning' | 'error' }>({ open: false, message: '', severity: 'success' });
   const [confirming, setConfirming] = useState(false);
   const { updatePickupStatus } = useConfirmPickup();
+  const { deleteDonation } = useDeleteDonation();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
 
   // Undo claim
   const handleUndoClaim = async () => {
@@ -397,13 +401,77 @@ export default function ItemDetailsPage() {
                   {confirming ? 'Processing...' : 'Undo Pickup'}
                 </Button>
               )}
+              {donation.createdBy === auth.currentUser?.uid && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  disabled={deleting}
+                  fullWidth
+                  startIcon={<Iconify icon="material-symbols:delete" />}
+                  sx={{ maxWidth: { sm: 200 } }}
+                >
+                  {deleting ? 'Deleting...' : 'Delete Donation'}
+                </Button>
+              )}
             </Stack>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+              open={deleteDialogOpen}
+              onClose={() => setDeleteDialogOpen(false)}
+              aria-labelledby="delete-dialog-title"
+              aria-describedby="delete-dialog-description"
+            >
+              <DialogTitle id="delete-dialog-title">
+                Delete Donation
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="delete-dialog-description">
+                  Are you sure you want to delete this donation? This action cannot be undone.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={async () => {
+                    setDeleting(true);
+                    try {
+                      await deleteDonation(donation.id);
+                      setSnackbar({
+                        open: true,
+                        message: 'Donation deleted successfully.',
+                        severity: 'success'
+                      });
+                      setTimeout(() => {
+                        navigate('/donations');
+                      }, 1500);
+                    } catch (error) {
+                      setSnackbar({
+                        open: true,
+                        message: 'Failed to delete donation. Please try again.',
+                        severity: 'error'
+                      });
+                      setDeleting(false);
+                    }
+                    setDeleteDialogOpen(false);
+                  }}
+                  color="error"
+                  variant="contained"
+                  disabled={deleting}
+                >
+                  {deleting ? 'Deleting...' : 'Delete'}
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
 
         </Grid>
       </Box>
 
-      {/* Notification Dialog */}
+      {/* Successful Claim Dialog */}
       <Dialog 
         open={isNotificationDialogOpen} 
         onClose={handleCloseNotificationDialog}
@@ -524,6 +592,8 @@ export default function ItemDetailsPage() {
           `}
         </style>
       </Dialog>
+
+      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

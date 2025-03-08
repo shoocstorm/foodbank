@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc, where } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/contexts/user-context";
 import { DonationStatus } from "src/types/donation-types";
@@ -286,4 +286,48 @@ export const useUsers = () => {
   }, []);
 
   return { users, loading, error };
+};
+
+export const useDeleteDonation = () => {
+  const deleteDonation = useCallback(async (donationId: string) => {
+    let message = '';
+    let result = false;
+
+    try {
+      // Get the donation document
+      const donationRef = doc(db, "donations", donationId);
+      const donationSnap = await getDoc(donationRef);
+      const donationData = donationSnap.data();
+
+      // Check if the current user is the creator of the donation
+      if (donationData?.createdBy !== auth.currentUser?.uid) {
+        message = "You can only delete your own donations";
+        return { result, message };
+      }
+
+      // Delete any claim requests for this donation
+      const queueQuery = query(
+        collection(db, 'claimQueue'),
+        where('donationId', '==', donationId)
+      );
+      const queueSnapshot = await getDocs(queueQuery);
+      const deleteClaimPromises = queueSnapshot.docs.map(d => deleteDoc(d.ref));
+      await Promise.all(deleteClaimPromises);
+
+      // Delete the donation document
+      await deleteDoc(donationRef);
+
+      result = true;
+      message = "Donation deleted successfully";
+      console.log(message);
+    } catch (e) {
+      message = "Error deleting donation";
+      console.error("Error deleting donation: ", e);
+      result = false;
+    }
+
+    return { result, message };
+  }, []);
+
+  return { deleteDonation };
 };
