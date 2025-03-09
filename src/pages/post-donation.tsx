@@ -364,8 +364,8 @@ const PostDonation = () => {
         </Box>
 
         {/* Preview dialog */}
-        <Dialog 
-          open={openPreviewDialog} 
+        <Dialog
+          open={openPreviewDialog}
           onClose={() => setOpenPreviewDialog(false)}
           maxWidth="md"
           fullWidth
@@ -410,7 +410,7 @@ const PostDonation = () => {
                 borderRadius: '50%',
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
               }} />
-              
+
               <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center' }}>
                 <Iconify icon="mdi:food-apple" sx={{ fontSize: 40, mr: 2 }} />
                 <Box>
@@ -440,34 +440,34 @@ const PostDonation = () => {
                       <Iconify icon="mdi:food" sx={{ color: 'primary.main', fontSize: 24, mr: 1.5 }} />
                       <Typography variant="h6">Food Information</Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Title
                       </Typography>
                       <Typography variant="body1" fontWeight="500">{title}</Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Food Type
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Iconify 
-                          icon={foodType === 'Halal' ? "mdi:food-halal" : "mdi:food"} 
-                          sx={{ color: foodType === 'Halal' ? 'success.main' : 'info.main', mr: 1 }} 
+                        <Iconify
+                          icon={foodType === 'Halal' ? "mdi:food-halal" : "mdi:food"}
+                          sx={{ color: foodType === 'Halal' ? 'success.main' : 'info.main', mr: 1 }}
                         />
                         <Typography variant="body1" fontWeight="500">{foodType}</Typography>
                       </Box>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Weight
                       </Typography>
                       <Typography variant="body1" fontWeight="500">{weight} kg</Typography>
                     </Box>
-                    
+
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Expiry Time
@@ -478,26 +478,9 @@ const PostDonation = () => {
                       </Box>
                     </Box>
                   </Box>
-                  
-                  {notes && (
-                    <Box sx={{
-                      p: { xs: 2, sm: 2.5 },
-                      borderRadius: 2,
-                      bgcolor: 'rgba(245, 245, 245, 0.8)',
-                      border: '1px dashed rgba(0, 0, 0, 0.1)',
-                      mb: { xs: 2, sm: 0 },
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                        <Iconify icon="mdi:note-text-outline" sx={{ color: 'text.secondary', fontSize: 22, mr: 1.5 }} />
-                        <Typography variant="h6">Additional Notes</Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                        {notes}
-                      </Typography>
-                    </Box>
-                  )}
+
                 </Grid>
-                
+
                 {/* Right column */}
                 <Grid item xs={12} sm={12} md={6}>
                   <Box sx={{
@@ -512,21 +495,21 @@ const PostDonation = () => {
                       <Iconify icon="mdi:map-marker" sx={{ color: 'error.main', fontSize: 24, mr: 1.5 }} />
                       <Typography variant="h6">Pickup Information</Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Address
                       </Typography>
                       <Typography variant="body1" fontWeight="500">{address}</Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Contact Person
                       </Typography>
                       <Typography variant="body1" fontWeight="500">{contactPerson}</Typography>
                     </Box>
-                    
+
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                         Contact Phone
@@ -537,7 +520,34 @@ const PostDonation = () => {
                       </Box>
                     </Box>
                   </Box>
-                  
+
+                </Grid>
+
+                {/* Additional Notes */}
+                <Grid item xs={12} sm={12} md={12}>
+                  {notes && (
+                    <Box sx={{
+                      p: { xs: 2, sm: 2.5 },
+                      borderRadius: 2,
+                      bgcolor: 'rgba(245, 245, 245, 0.8)',
+                      border: '1px dashed rgba(0, 0, 0, 0.1)',                      
+                      mb: { xs: 2, sm: 3 },
+                    }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                        <Iconify icon="mdi:note-text-outline" sx={{ color: 'text.secondary', fontSize: 22, mr: 1.5 }} />
+                        <Typography variant="h6">Additional Notes</Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        {notes}
+                      </Typography>
+                    </Box>
+
+                  )}
+                </Grid>
+
+                {/* Prompt for next step */}
+                <Grid item xs={12} sm={12} md={12}>
+
                   <Box sx={{
                     p: { xs: 2, sm: 2.5 },
                     borderRadius: 2,
@@ -550,7 +560,7 @@ const PostDonation = () => {
                       <Typography variant="h6">What happens next?</Typography>
                     </Box>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      After publishing, your donation will be visible to people in need. You will be notified when someone claims your donation.                      
+                      After publishing, your donation will be visible to people in need. You will be notified when someone claims your donation.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Thank you for helping reduce food waste and supporting your community!
@@ -559,24 +569,24 @@ const PostDonation = () => {
                 </Grid>
               </Grid>
             </DialogContent>
-            
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              p: 3, 
+
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              p: 3,
               borderTop: '1px solid rgba(0, 0, 0, 0.08)',
               bgcolor: 'background.paper',
               position: 'sticky',
               bottom: 0,
               zIndex: 1,
               width: '100%',
-              
+
             }}>
-              <Button 
+              <Button
                 onClick={() => setOpenPreviewDialog(false)}
                 variant="outlined"
                 startIcon={<Iconify icon="mdi:arrow-left" />}
-                sx={{ 
+                sx={{
                   borderRadius: 2,
                   px: 3,
                   py: 1,
