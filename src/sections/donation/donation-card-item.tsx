@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { Label } from 'src/components/label';
-import { User } from 'src/contexts/user-context';
+import { User } from 'src/types/auth-types';
 import { DonationStatus, DonationItemProps } from 'src/types/donation-types';
 import { Iconify } from 'src/components/iconify';
 

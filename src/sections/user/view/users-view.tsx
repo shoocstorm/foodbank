@@ -13,8 +13,7 @@ import Alert from '@mui/material/Alert';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { Iconify } from 'src/components/iconify';
-import { User } from 'src/contexts/user-context';
+import { User } from 'src/types/auth-types';
 import { Scrollbar } from 'src/components/scrollbar';
 import { useUsers } from 'src/hooks/use-firebase';
 

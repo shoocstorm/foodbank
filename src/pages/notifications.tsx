@@ -211,12 +211,9 @@ export default function NotificationsPage() {
                                                 <TableCell>
                                                     <Typography
                                                         variant="subtitle2"
-                                                        sx={{
-                                                            color:
-                                                                notification.status === 'unread' ? 'gray' : 'success.main',
-                                                        }}
+                                                        sx={{ color: notification.status === 'unread' ? 'gray' : 'success.main', fontWeight: notification.status === 'unread' ? 'bold' : '' }}
                                                     >
-                                                        {notification.status === 'unread' ? 'READ' : 'UNREAD'}
+                                                        {notification.status === 'unread' ? 'UNREAD' : 'READ'}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell align="right">

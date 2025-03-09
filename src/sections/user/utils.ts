@@ -1,4 +1,4 @@
-import { User } from 'src/contexts/user-context';
+import { User } from 'src/types/auth-types';
 
 // ----------------------------------------------------------------------
 

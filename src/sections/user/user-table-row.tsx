@@ -12,7 +12,7 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
-import { User } from 'src/contexts/user-context';
+import { User } from 'src/types/auth-types';
 
 // ----------------------------------------------------------------------
 

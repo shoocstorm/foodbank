@@ -46,9 +46,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     setOpenPopover(null);
   }, []);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(() => {    
+    // Sign out from Firebase
     signOut(auth).then(() => {
       setUser(null);
+      localStorage.removeItem('user');
       router.push('/sign-in');
     }).catch((error) => {
       console.error('Logout failed:', error);

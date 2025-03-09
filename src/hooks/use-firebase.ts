@@ -3,7 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc, where, writeBatch } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
-import { User } from "src/contexts/user-context";
+import { User } from "src/types/auth-types";
 import { DonationStatus } from "src/types/donation-types";
 import { useNavigate } from "react-router-dom";
 

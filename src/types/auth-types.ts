@@ -1,4 +1,15 @@
 
+export interface User {
+  uid: string;
+  displayName: string;
+  email: string;
+  role?: string;
+  status?: string; // active, pending, blocked
+  organization?: string;
+  avatar?: string;
+  isVerified?: boolean;
+}
+
 export interface SignInError {
     code: string;
     message: string;
