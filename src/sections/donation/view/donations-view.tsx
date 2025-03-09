@@ -107,16 +107,16 @@ export function DonationsView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Donations
+          Welcome to food hub!
         </Typography>
 
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={() => navigate('/post-donation')}>
           New Donation
-        </Button>
+        </Button> */}
       </Box>
 
       <Box

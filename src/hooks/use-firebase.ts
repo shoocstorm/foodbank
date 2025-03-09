@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc, where } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc, where, writeBatch } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/contexts/user-context";
 import { DonationStatus } from "src/types/donation-types";
@@ -61,8 +61,91 @@ export interface ClaimRequestProps {
 export enum DBTables {
   DONATIONS = 'donations',
   USERS = 'users',
-  CLAIM_QUEUE = 'claimQueue'
+  CLAIM_QUEUE = 'claimQueue',
+  NOTIFICATIONS = 'notifications'
 };
+
+export interface NotificationProps {
+  id: string;
+  from: string;
+  category: 'donation-created' | 'donation-claimed' | 'donation-picked-up' | 'donation-deleted';
+  message: string;
+  time: number;
+  status: 'read' | 'unread';
+  relatedTo?: string;
+  userId: string;
+};
+
+// fetches and listens to changes in the notifications collection in firestore
+export const useNotifications = () => {
+  const [notifications, setNotifications] = useState<NotificationProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!auth.currentUser) return () => {};
+
+    setLoading(true);
+    // Create a query to get user's notifications, ordered by time
+    const q = query(
+      collection(db, DBTables.NOTIFICATIONS),
+      where('userId', '==', auth.currentUser.uid),
+      orderBy('time', 'desc')
+    );
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(q,
+      (querySnapshot) => {
+        const notificationsList = querySnapshot.docs.map(notification => ({
+          id: notification.id,
+          ...notification.data()
+        })) as NotificationProps[];
+        setNotifications(notificationsList);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error('Error fetching notifications:', err);
+        setError(err);
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  const markAsRead = useCallback(async (notificationId: string) => {
+    try {
+      const notificationRef = doc(db, DBTables.NOTIFICATIONS, notificationId);
+      await updateDoc(notificationRef, { status: 'read' });
+      return true;
+    } catch (err) {
+      console.error('Error marking notification as read:', err);
+      return false;
+    }
+  }, []);
+
+  const markAllAsRead = useCallback(async () => {
+    try {
+      const batch = writeBatch(db);
+      notifications
+        .filter(notification => notification.status === 'unread')
+        .forEach(notification => {
+          const notificationRef = doc(db, DBTables.NOTIFICATIONS, notification.id);
+          batch.update(notificationRef, { status: 'read' });
+        });
+      await batch.commit();
+      return true;
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err);
+      return false;
+    }
+  }, [notifications]);
+
+  return { notifications, loading, error, markAsRead, markAllAsRead };
+};
+
 
 // fetches and listens to changes in the donations collection in firestore
 export const useDonations = () => {
@@ -144,6 +227,21 @@ export const useAddDonation = () => {
     try {
       const docRef = await addDoc(collection(db, DBTables.DONATIONS), donation);
       console.log("Donation written with ID: ", docRef.id);
+
+      // Create notification for the donor
+      const notification = {
+        from: auth.currentUser?.uid || '',
+        category: 'donation-created',
+        message: `Your donation "${donation.title}" has been published successfully`,
+        time: Date.now(),
+        status: 'unread',
+        relatedTo: docRef.id,
+        userId: auth.currentUser?.uid || ''
+      };
+
+      // Add notification to Firestore
+      await addDoc(collection(db, DBTables.NOTIFICATIONS), notification);
+
     } catch (e) {
       console.error("Error adding donation: ", e);
       throw e;
@@ -239,6 +337,32 @@ export const useClaimUnClaim = () => {
             claimedBy: auth.currentUser?.uid, 
             claimedAt: Date.now() 
           });
+
+          // Create notifications for both donor and claimer
+          const donationData = donationSnap.data();
+          const donorNotification = {
+            from: auth.currentUser?.uid || '',
+            category: 'donation-claimed',
+            message: `Your donation "${donationData?.title}" has been claimed`,
+            time: Date.now(),
+            status: 'unread',
+            relatedTo: donationId,
+            userId: donationData?.createdBy || ''
+          };
+
+          const claimerNotification = {
+            from: donationData?.createdBy || '',
+            category: 'donation-claimed',
+            message: `You have successfully claimed "${donationData?.title}". Collection code: ${collectionCode}`,
+            time: Date.now(),
+            status: 'unread',
+            relatedTo: donationId,
+            userId: auth.currentUser?.uid || ''
+          };
+
+          // Add notifications to Firestore
+          await addDoc(collection(db, DBTables.NOTIFICATIONS), donorNotification);
+          await addDoc(collection(db, DBTables.NOTIFICATIONS), claimerNotification);
           
           // Delete claim request from queue
           const claimRef = doc(db, DBTables.CLAIM_QUEUE, claimRequests[0].id);
@@ -266,7 +390,36 @@ export const useClaimUnClaim = () => {
       } else {
         // unclaim
         const donationRef = doc(db, DBTables.DONATIONS, donationId);
+        const donationSnap = await getDoc(donationRef);
+        const donationData = donationSnap.data();
+
         await updateDoc(donationRef, { status, claimedBy: null });
+
+        // Create notifications for both donor and claimer
+        const donorNotification = {
+          from: auth.currentUser?.uid || '',
+          category: 'donation-claimed',
+          message: `The claim on your donation "${donationData?.title}" has been cancelled`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData?.createdBy || ''
+        };
+
+        const claimerNotification = {
+          from: donationData?.createdBy || '',
+          category: 'donation-claimed',
+          message: `You have cancelled your claim on "${donationData?.title}"`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: auth.currentUser?.uid || ''
+        };
+
+        // Add notifications to Firestore
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), donorNotification);
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), claimerNotification);
+
         result = true;
         message = "Donation unclaimed successfully";
         console.log(message);
@@ -288,11 +441,66 @@ export const useConfirmPickup = () => {
   const updatePickupStatus = useCallback(async (donationId: string, status: string) => {
     try {
       const donationRef = doc(db, DBTables.DONATIONS, donationId);
+      const donationSnap = await getDoc(donationRef);
+      const donationData = donationSnap.data();
+
       if (status === DonationStatus.PICKED_UP) {
         await updateDoc(donationRef, { status, pickupAt: Date.now() });
+
+        // Create notifications for both donor and claimer
+        const donorNotification = {
+          from: auth.currentUser?.uid || '',
+          category: 'donation-picked-up',
+          message: `Your donation "${donationData?.title}" has been picked up`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData?.createdBy || ''
+        };
+
+        const claimerNotification = {
+          from: donationData?.createdBy || '',
+          category: 'donation-picked-up',
+          message: `You have picked up "${donationData?.title}"`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData?.claimedBy || ''
+        };
+
+        // Add notifications to Firestore
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), donorNotification);
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), claimerNotification);
+
       } else {
         await updateDoc(donationRef, { status, pickupAt: null });
+
+        // Create notifications for both donor and claimer
+        const donorNotification = {
+          from: auth.currentUser?.uid || '',
+          category: 'donation-picked-up',
+          message: `The pickup status of your donation "${donationData?.title}" has been reverted`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData?.createdBy || ''
+        };
+
+        const claimerNotification = {
+          from: donationData?.createdBy || '',
+          category: 'donation-picked-up',
+          message: `The pickup status of "${donationData?.title}" has been reverted to claimed`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData?.claimedBy || ''
+        };
+
+        // Add notifications to Firestore
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), donorNotification);
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), claimerNotification);
       }
+
       console.log(`Document status updated to ${status} successfully`);
       return true;
     } catch (e) {
@@ -345,6 +553,25 @@ export const useDeleteDonation = () => {
       if (donationData?.createdBy !== auth.currentUser?.uid) {
         message = "You can only delete your own donations";
         return { result, message };
+      }
+
+      // If donation was claimed or picked up, notify the claimer
+      if (donationData?.claimedBy && 
+          (donationData?.status === DonationStatus.CLAIMED || 
+           donationData?.status === DonationStatus.PICKED_UP)) {
+        // Create notification for the claimer
+        const claimerNotification = {
+          from: auth.currentUser?.uid || '',
+          category: 'donation-deleted',
+          message: `The donation "${donationData?.title}" that you ${donationData?.status === DonationStatus.PICKED_UP ? 'picked up' : 'claimed'} has been deleted by the donor`,
+          time: Date.now(),
+          status: 'unread',
+          relatedTo: donationId,
+          userId: donationData.claimedBy
+        };
+
+        // Add notification to Firestore
+        await addDoc(collection(db, DBTables.NOTIFICATIONS), claimerNotification);
       }
 
       // Delete any claim requests for this donation

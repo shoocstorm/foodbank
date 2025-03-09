@@ -84,7 +84,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 <Searchbar />
                 {/* <LanguagePopover data={_langs} /> */}          
   
-                <NotificationsPopover data={_notifications} />
+                <NotificationsPopover />
                 <AccountPopover
                   data={[
                     {
