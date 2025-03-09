@@ -74,12 +74,10 @@ export function DonationItem({ donation, user, onClick }: { donation: DonationIt
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-         
           <Iconify icon={donation.foodType === 'Halal' ? 'mdi:food-halal' : "mdi:food"} width={20} sx={{ mr: 1 }} />
-          <Typography fontSize={12} color="text.secondary">
+          <Typography fontSize={12} color="text.secondary" sx={{ fontWeight: 500, padding: 0, pl: '8px', pr: '8px', color: donation.foodType === 'Halal' ? 'white' : '',  bgcolor: donation.foodType === 'Halal' ? 'success.main' : '', borderRadius: 1 }}>
             {donation.foodType}
           </Typography>
-          
         </Box>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
