@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, updateDoc, getDocs, getDoc, deleteDoc, where, writeBatch } from "firebase/firestore";
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/types/auth-types";
@@ -81,9 +81,23 @@ export const useNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    if (!auth.currentUser) return () => {};
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setAuthReady(true);
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!authReady) return () => {};
+    if (!auth.currentUser) {
+      setNotifications([]);
+      setLoading(false);
+      return () => {};
+    }
 
     setLoading(true);
     // Create a query to get user's notifications, ordered by time
@@ -113,7 +127,7 @@ export const useNotifications = () => {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [authReady]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
