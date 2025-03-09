@@ -90,11 +90,11 @@ export default function ItemDetailsPage() {
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
         
         {/* Donation Status Milestone Diagram */}
-        <DonationStatusMilestone status={donation.status} />
+        <DonationStatusMilestone donation={donation} />
 
         {/* Donation Title */}
         <Typography variant="h4" gutterBottom>{donation.title}</Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <Typography fontSize={10} color="text.secondary">Published At:</Typography>
           <Typography fontSize={10} color="text.secondary">{new Date(donation.creationTime).toLocaleString()}</Typography>
         </Box>

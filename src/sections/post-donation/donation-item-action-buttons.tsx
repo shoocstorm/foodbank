@@ -96,17 +96,44 @@ export function DonationActions({
   // Render claim button
   if (donation.status === DonationStatus.ACTIVE) {
     return (
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleClickClaim}
-        disabled={updating}
-        fullWidth
-        startIcon={<Iconify icon="ic:round-shopping-cart" />}
-        sx={{ maxWidth: { sm: 200 }, mt: 2 }}
-      >
-        {updating ? 'Processing...' : 'Claim'}
-      </Button>
+      <>
+        <style>
+          {`
+            @keyframes pulse {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.1); }
+              100% { transform: scale(1); }
+            }
+            @keyframes ripple {
+              0% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.4); }
+              70% { box-shadow: 0 0 0 10px rgba(25, 118, 210, 0); }
+              100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0); }
+            }
+        `}
+        </style>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleClickClaim}
+          disabled={updating}
+          fullWidth
+          startIcon={<Iconify icon="ic:round-shopping-cart" />}
+          sx={{ maxWidth: { sm: 200 }, mt: 2,
+          animation: donation.status === DonationStatus.ACTIVE && !updating ? 'pulse 3s infinite' : 'none',
+          boxShadow: donation.status === DonationStatus.ACTIVE && !updating ? '0 0 0 rgba(25, 118, 210, 0.4)' : 'none',
+          '&::after': donation.status === DonationStatus.ACTIVE && !updating ? {
+            content: '""',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            borderRadius: '10%',
+            animation: 'ripple 3s infinite'
+          } : {}
+        }}
+        >
+          {updating ? 'Processing...' : 'Claim'}
+        </Button>
+      </>
     );
   }
 
@@ -115,27 +142,27 @@ export function DonationActions({
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', mt: 2, mb: 2, justifyContent: 'space-between' }}>
         <Button
-          variant="outlined"
-          color="warning"
-          onClick={handleUndoClaim}
-          disabled={undoing || donation.claimedBy !== auth.currentUser?.uid}
-          fullWidth
-          startIcon={<Iconify icon="material-symbols:undo" />}
-          sx={{ maxWidth: { sm: 200 }, mt: 2, mb: 2, mr: 2 }}
-        >
-          {undoing ? 'Processing...' : 'Undo Claim'}
-        </Button>
-
-        <Button
           variant="contained"
           color="primary"
           onClick={handleConfirmPickup}
           disabled={confirming || donation.claimedBy !== auth.currentUser?.uid}
           fullWidth
           startIcon={<Iconify icon="material-symbols:check-circle" />}
-          sx={{ maxWidth: { sm: 200 }, mt: 0, mb: 2, mr: 2 }}
+          sx={{ maxWidth: { sm: 200 }, mt: 2, mb: 2, mr: 2 }}
         >
           {confirming ? 'Processing...' : 'Confirm Pickup'}
+        </Button>
+
+        <Button
+          variant="outlined"
+          color="warning"
+          onClick={handleUndoClaim}
+          disabled={undoing || donation.claimedBy !== auth.currentUser?.uid}
+          fullWidth
+          startIcon={<Iconify icon="material-symbols:undo" />}
+          sx={{ maxWidth: { sm: 200 }, mt: 0, mb: 2, mr: 2 }}
+        >
+          {undoing ? 'Processing...' : 'Undo Claim'}
         </Button>
 
         {donation.createdBy === auth.currentUser?.uid && (
