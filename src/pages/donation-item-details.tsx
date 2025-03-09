@@ -78,7 +78,77 @@ export default function ItemDetailsPage() {
   }, [id, donations, donation]);
 
   if (!donation) {
-    return <p>Loading...</p>;
+    return (
+      <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+        <Box sx={{ width: '100%', height: 8, bgcolor: 'grey.200', borderRadius: 1, mb: 4, animation: 'pulse 1.5s ease-in-out infinite' }} />
+        
+        <Grid container spacing={3}>
+          {/* Skeleton for image */}
+          <Grid xs={12} md={6}>
+            <Box
+              sx={{
+                width: '100%',
+                height: 400,
+                bgcolor: 'grey.200',
+                borderRadius: 2,
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }}
+            />
+          </Grid>
+
+          {/* Skeleton for details */}
+          <Grid xs={12} md={6}>
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ width: '60%', height: 32, bgcolor: 'grey.200', borderRadius: 1, mb: 2, animation: 'pulse 1.5s ease-in-out infinite' }} />
+              <Box sx={{ width: '40%', height: 20, bgcolor: 'grey.200', borderRadius: 1, animation: 'pulse 1.5s ease-in-out infinite' }} />
+            </Box>
+
+            <Box sx={{ mb: 4 }}>
+              {[...Array(4)].map((_, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    width: '100%',
+                    height: 24,
+                    bgcolor: 'grey.200',
+                    borderRadius: 1,
+                    mb: 2,
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                    animationDelay: `${index * 0.1}s`,
+                  }}
+                />
+              ))}
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {[...Array(2)].map((_, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    width: 120,
+                    height: 40,
+                    bgcolor: 'grey.200',
+                    borderRadius: 1,
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                    animationDelay: `${index * 0.1}s`,
+                  }}
+                />
+              ))}
+            </Box>
+          </Grid>
+        </Grid>
+
+        <style>
+          {`
+            @keyframes pulse {
+              0% { opacity: 1; }
+              50% { opacity: 0.4; }
+              100% { opacity: 1; }
+            }
+          `}
+        </style>
+      </Box>
+    );
   }
 
   return (
@@ -170,7 +240,7 @@ export default function ItemDetailsPage() {
         open={snackbar.open}
         autoHideDuration={3000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>
           {snackbar.message}

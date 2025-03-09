@@ -159,7 +159,7 @@ const SignUp = () => {
         open={openSnackbar}
         autoHideDuration={2000}
         message="Sign up successfully! Let's Donate, Connect, and Feed Your Community."
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </Container>
   );

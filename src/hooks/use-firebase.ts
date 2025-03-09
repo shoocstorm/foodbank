@@ -143,7 +143,22 @@ export const useNotifications = () => {
     }
   }, [notifications]);
 
-  return { notifications, loading, error, markAsRead, markAllAsRead };
+  const deleteNotifications = useCallback(async (notificationIds: string[]) => {
+    try {
+      const batch = writeBatch(db);
+      notificationIds.forEach(id => {
+        const notificationRef = doc(db, DBTables.NOTIFICATIONS, id);
+        batch.delete(notificationRef);
+      });
+      await batch.commit();
+      return true;
+    } catch (err) {
+      console.error('Error deleting notifications:', err);
+      return false;
+    }
+  }, []);
+
+  return { notifications, loading, error, markAsRead, markAllAsRead, deleteNotifications };
 };
 
 
