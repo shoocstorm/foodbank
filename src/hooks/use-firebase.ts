@@ -5,6 +5,7 @@ import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, order
 import { useCallback, useState, useEffect } from "react";
 import { User } from "src/contexts/user-context";
 import { DonationStatus } from "src/types/donation-types";
+import { useNavigate } from "react-router-dom";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -32,13 +33,21 @@ export const db = getFirestore(firebaseapp);
 export interface DonationProps {
   title: string;
   foodType: string;
+  status: DonationStatus;
+  photo?: String | File | null;
   weight: number;
-  photo: File | null;
   expiry: number;
   address: string;
   contactPerson: string;
   contactPhone: string;
   notes: string;
+
+  createdBy?: string;
+  creationTime?: number;
+  claimedBy?: string;
+  claimedAt?: number;
+  pickupAt?: number;
+  collectionCode?: string;
 };
 
 export interface ClaimRequestProps {
@@ -293,6 +302,31 @@ export const useConfirmPickup = () => {
   }, []);
 
   return { updatePickupStatus };
+};
+
+// duplicate a donation
+export const useDuplicateDonation = () => {
+  const { addDonation } = useAddDonation();
+  const navigate = useNavigate();
+
+  const duplicateDonation = useCallback(async (donationData: DonationProps) => {
+    try {
+      const donation: DonationProps = {
+        ...donationData,
+        status: DonationStatus.ACTIVE,
+        createdBy: auth.currentUser?.uid,
+        creationTime: new Date().getTime(),
+      };
+
+      await addDonation(donation);
+      return { success: true, message: 'Donation duplicated successfully' };
+    } catch (error) {
+      console.error('Error duplicating donation:', error);
+      return { success: false, message: 'Failed to duplicate donation' };
+    }
+  }, [addDonation]);
+
+  return { duplicateDonation };
 };
 
 // delete a donation

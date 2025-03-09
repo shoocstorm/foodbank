@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { DonationStatus, DonationItemProps } from 'src/types/donation-types';
 import { Iconify } from 'src/components/iconify';
-import { auth, useClaimUnClaim, useConfirmPickup, useDeleteDonation } from 'src/hooks/use-firebase';
+import { auth, useClaimUnClaim, useConfirmPickup, useDuplicateDonation } from 'src/hooks/use-firebase';
 import { Box } from '@mui/material';
 
 type DonationActionsProps = {
@@ -23,10 +23,12 @@ export function DonationActions({
 }: DonationActionsProps) {
   const { updateStatus } = useClaimUnClaim();
   const { updatePickupStatus } = useConfirmPickup();
+  const { duplicateDonation } = useDuplicateDonation();
   const [updating, setUpdating] = useState(false);
   const [undoing, setUndoing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [duplicating, setDuplicating] = useState(false);
 
   // Claim donation
   const handleClickClaim = async () => {
@@ -96,7 +98,7 @@ export function DonationActions({
   // Render claim button
   if (donation.status === DonationStatus.ACTIVE) {
     return (
-      <>
+      <Box sx={{ display: 'flex', flexDirection: 'column', mt: 2, mb: 2, justifyContent: 'space-between' }}>
         <style>
           {`
             @keyframes pulse {
@@ -118,22 +120,70 @@ export function DonationActions({
           disabled={updating}
           fullWidth
           startIcon={<Iconify icon="ic:round-shopping-cart" />}
-          sx={{ maxWidth: { sm: 200 }, mt: 2,
-          animation: donation.status === DonationStatus.ACTIVE && !updating ? 'pulse 3s infinite' : 'none',
-          boxShadow: donation.status === DonationStatus.ACTIVE && !updating ? '0 0 0 rgba(25, 118, 210, 0.4)' : 'none',
-          '&::after': donation.status === DonationStatus.ACTIVE && !updating ? {
-            content: '""',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            borderRadius: '10%',
-            animation: 'ripple 3s infinite'
-          } : {}
-        }}
+          sx={{
+            maxWidth: { sm: 200 }, mt: 2, mb: 2, mr: 2,
+            boxShadow: donation.status === DonationStatus.ACTIVE && !updating ? '0 0 0 rgba(25, 118, 210, 0.4)' : 'none',
+            '&::after': donation.status === DonationStatus.ACTIVE && !updating ? {
+              content: '""',
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              borderRadius: '10%',
+              animation: 'ripple 3s infinite'
+            } : {}
+          }}
         >
           {updating ? 'Processing...' : 'Claim'}
         </Button>
-      </>
+
+        {donation.createdBy === auth.currentUser?.uid && (
+          <>
+
+            <Button
+              variant="outlined"
+              color="secondary"              
+              fullWidth
+              disabled={duplicating}
+              onClick={async () => {
+                setDuplicating(true);
+                const cloned = {
+                  title: donation.title,
+                  foodType: donation.foodType,
+                  status: DonationStatus.ACTIVE,
+                  photo: donation.photo,
+                  weight: donation.weight,
+                  expiry: donation.expiry,
+                  address: donation.address,
+                  contactPerson: donation.contactPerson || '',
+                  contactPhone: donation.contactPhone || '',
+                  notes: donation.notes || ''
+                };
+                const { success, message } = await duplicateDonation(cloned);
+                setDuplicating(false);
+                onSetSnackbar(message, success ? 'success' : 'error');
+              }}
+              startIcon={<Iconify icon="material-symbols:copy-all" />}
+              sx={{ maxWidth: { sm: 200 }, mt: 0, mb: 2 }}
+            >
+              {duplicating ? 'Duplicating...' : 'Duplicate Donation'}
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={onOpenDeleteDialog}
+              disabled={deleting}
+              fullWidth
+              startIcon={<Iconify icon="material-symbols:delete" />}
+              sx={{ maxWidth: { sm: 200 }, mt: 0, mb: 2 }}
+            >
+              Delete Donation
+            </Button>
+
+          </>
+        )}
+
+      </Box>
     );
   }
 
@@ -170,12 +220,12 @@ export function DonationActions({
             variant="outlined"
             color="error"
             onClick={onOpenDeleteDialog}
-            disabled={deleting}
+            disabled={deleting || donation.status === DonationStatus.CLAIMED}
             fullWidth
             startIcon={<Iconify icon="material-symbols:delete" />}
             sx={{ maxWidth: { sm: 200 }, mt: 0, mb: 2 }}
           >
-            Delete Donation
+            {donation.status === DonationStatus.CLAIMED ? 'Cannot delete claimed donation' : 'Delete Donation'}
           </Button>
         )}
       </Box>

@@ -8,6 +8,7 @@ export enum DonationStatus {
 export type DonationItemProps = {
   id: string;
   title: string;
+  foodType: string;
   address: string;
   contactPerson?: string;
   contactPhone?: string;
@@ -16,6 +17,7 @@ export type DonationItemProps = {
   weight: number;
   status: DonationStatus;
   photo: string;
+  notes?: string;
   colors: string[];
   collectionCode?: string;
   expiry: number;
