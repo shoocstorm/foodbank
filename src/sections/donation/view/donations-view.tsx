@@ -14,7 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { useDonations } from 'src/hooks/use-firebase';
 import { useUser } from 'src/contexts/user-context';
 
-import { DonationItem } from '../donation-item';
+import { DonationItem } from '../donation-card-item';
 import { DonationSort } from '../donation-sort';
 import { CartIcon } from '../donation-cart-widget';
 import { DonationFilters } from '../donation-filters';

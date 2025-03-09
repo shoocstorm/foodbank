@@ -11,7 +11,7 @@ import { useUser } from 'src/contexts/user-context';
 import { useDonations } from 'src/hooks/use-firebase';
 import { Iconify } from 'src/components/iconify';
 
-import { DonationItem } from '../donation-item';
+import { DonationItem } from '../donation-card-item';
 import { DonationSort } from '../donation-sort';
 
 export function MyClaimsView() {

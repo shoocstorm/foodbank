@@ -74,6 +74,15 @@ export function DonationItem({ donation, user, onClick }: { donation: DonationIt
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
+         
+          <Iconify icon={donation.foodType === 'Halal' ? 'mdi:food-halal' : "mdi:food"} width={20} sx={{ mr: 1 }} />
+          <Typography fontSize={12} color="text.secondary">
+            {donation.foodType}
+          </Typography>
+          
+        </Box>
+
+        <Box display="flex" alignItems="center" justifyContent="space-between">
           <Iconify icon="mdi:map-marker" width={20} sx={{ mr: 1 }} />
           <Typography fontSize={12} color="text.secondary">
             {donation.address}
