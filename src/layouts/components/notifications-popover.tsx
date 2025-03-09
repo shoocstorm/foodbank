@@ -163,7 +163,15 @@ export function NotificationsPopover({ sx, ...other }: NotificationsPopoverProps
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple color="inherit">
+          <Button
+            fullWidth
+            disableRipple
+            color="inherit"
+            onClick={() => {
+              navigate('/notifications');
+              handleClosePopover();
+            }}
+          >
             View all
           </Button>
         </Box>

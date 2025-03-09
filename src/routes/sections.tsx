@@ -10,6 +10,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import MyDonationsPage from 'src/pages/my-donations';
 import TermsAndConditions from 'src/pages/terms-and-conditions';
+import NotificationsPage from 'src/pages/notifications';
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +75,7 @@ export function Router() {
         { path: 'my-claims', element: <MyClaimsPage /> },
         { path: 'my-donations', element: <MyDonationsPage /> },
         { path: 'profile', element: <ProfilePage /> },
+        { path: 'notifications', element: <NotificationsPage /> },
       ],
     },
     {
