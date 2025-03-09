@@ -9,6 +9,7 @@ import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
 import { useUser } from 'src/contexts/user-context';
 import MyDonationsPage from 'src/pages/my-donations';
+import TermsAndConditions from 'src/pages/terms-and-conditions';
 
 // ----------------------------------------------------------------------
 
@@ -91,6 +92,14 @@ export function Router() {
         </AuthLayout>
       ),
     },
+    {
+      path: 'terms-and-conditions',
+      element: (
+       
+          <TermsAndConditions />
+        
+      ),
+    },    
     {
       path: '404',
       element: <Page404 />,

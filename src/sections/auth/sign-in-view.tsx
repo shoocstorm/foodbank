@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
@@ -19,6 +21,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { useUser } from 'src/contexts/user-context';
 import { doc, getDoc } from 'firebase/firestore';
+import { SignInError, SignInErrorCode } from 'src/types/auth-types';
 
 // ----------------------------------------------------------------------
 
@@ -29,16 +32,39 @@ export function SignInView() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { setUser } = useUser();
 
-  const handleSignIn = useCallback((loginEmail: string, loginPassword: string) => {
+  const getErrorMessage = (errorCode: string): string => {
+    switch (errorCode) {
+      case SignInErrorCode.INVALID_CREDENTIAL:
+      case SignInErrorCode.INVALID_PASSWORD:
+        return 'Invalid email or password';
+      case SignInErrorCode.INVALID_EMAIL:
+        return 'Please enter a valid email address';
+      case SignInErrorCode.USER_DISABLED:
+        return 'This account has been disabled. Please contact support';
+      case SignInErrorCode.USER_NOT_FOUND:
+        return 'No account found with this email';
+      case SignInErrorCode.TOO_MANY_REQUESTS:
+        return 'Too many sign-in attempts. Please try again later';
+      case SignInErrorCode.OPERATION_NOT_ALLOWED:
+        return 'Sign-in is currently disabled. Please try again later';
+      case SignInErrorCode.REQUIRES_RECENT_LOGIN:
+        return 'Please sign in again to continue';
+      default:
+        return 'Sign-in failed. Please try again';
+    }
+  };
 
+  const handleSignIn = useCallback((loginEmail: string, loginPassword: string) => {
     setIsLoading(true);
     signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
       if (user) {
+        // Retrieve extra user info
         getDoc(doc(db, DBTables.USERS, user.uid)).then((docSnap) => {
           const userDetail = docSnap.data();
           console.log('Sign-in succeeded for user %s - %s', user.email, userDetail?.displayName);
@@ -56,16 +82,14 @@ export function SignInView() {
           });
           router.push('/');
         });
-
-
       } else {
-        console.error('Sign-in failed');
+        console.error('Sign-in failed unexpectedly');
       }
-    }).catch((error) => {
-      console.error('Sign-in failed'.concat(error));
+    }).catch((err: SignInError) => {
+      console.error('Sign-in failed:', err);
+      setError(getErrorMessage(err.code));
       setIsLoading(false);
     }).finally(() => { setIsLoading(false); });
-
   }, [router, setUser]);
 
   const renderForm = (
@@ -154,6 +178,22 @@ export function SignInView() {
           <Iconify icon="ri:twitter-x-fill" />
         </IconButton>
       </Box>
+
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setError(null)}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

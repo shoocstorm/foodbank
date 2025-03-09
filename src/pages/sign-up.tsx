@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography, Box, Snackbar } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Snackbar, FormControlLabel, Checkbox } from '@mui/material';
 import './sign-up.css';
 import { useSignup } from '../hooks/use-firebase';
 
@@ -11,6 +11,7 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [organization, setOrganization] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const { signUp } = useSignup();
 
@@ -58,13 +59,10 @@ const SignUp = () => {
       organization,
       role: 'Donor',
     }).then(() => {
-      /* alert('Sign up successful! Redirecting to sign-in page...'); */
       setOpenSnackbar(true);
-      // Redirect after 2 seconds
       setTimeout(() => {
         navigate('/sign-in');
       }, 2000);
-
     }).catch((error) => {
       console.error('Sign up failed:', error);
     });
@@ -125,11 +123,31 @@ const SignUp = () => {
           value={organization}
           onChange={(e) => setOrganization(e.target.value)}
         />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              color="primary"
+            />
+          }
+          label={
+            <Typography variant="body2">
+              I agree to the {' '}
+              <Link to="/terms-and-conditions" rel="noopener noreferrer">
+                Terms and Conditions
+              </Link>
+            </Typography>
+          }
+          sx={{ mt: 2 }}
+        />
         <Button
           type="submit"
           fullWidth
           variant="contained"
+          
           sx={{ mt: 3, mb: 2 }}
+          disabled={!termsAccepted}
         >
           Sign Up
         </Button>
